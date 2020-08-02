@@ -64,8 +64,8 @@
 			while (rs.next()) {
 		%>
 		<tr>
-			<td><%=rs.getInt(1)%></td>					// retrieving values of columns of each row, based on index of columns in the db
-			<td><%=rs.getString(2)%></td>					// 1 represent product_id, 2 represent material_no, and so on.
+			<td><%=rs.getInt(1)%></td>					<!-- retrieving values of columns of each row, based on index of columns in the db -->
+			<td><%=rs.getString(2)%></td>					<!-- 1 represent product_id, 2 represent material_no, and so on. -->
 			<td><%=rs.getString(3)%></td>
 			<td><%=rs.getString(4)%></td>
 			<td><%=rs.getInt(5)%></td>
