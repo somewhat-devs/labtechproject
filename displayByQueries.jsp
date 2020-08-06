@@ -28,7 +28,7 @@ th{
 	<br>
 	<%
 		try {
-		String connectionURL = "jdbc:mysql://localhost:3306/labtech";
+		String connectionURL = "jdbc:mysql://localhost:3306/labtech";			// initializing connection to the mysql database.
 		Connection connection = null;
 		Statement statement, statementSect, statementHscode = null;
 		ResultSet rs, rs3, rs2 = null;
@@ -38,10 +38,10 @@ th{
 		statementSect = connection.createStatement();
 		statementHscode = connection.createStatement();
 		
-		String QueryString1 = "SELECT * from product_table where " + "product_name like '%agar plate%'";
+		String QueryString1 = "SELECT * from product_table where " + "product_name like '%agar plate%'";	// creating query strings
 
-		String QueryString2 = "SELECT * from product_table where "+
-		"material_no = 'AL243A-500ML' and " +
+		String QueryString2 = "SELECT * from product_table where "+						// 1 for single input type query
+		"material_no = 'AL243A-500ML' and " +									// 2, 3, 4, 5 for 2 inputs type query
 		"product_name like '%Nutrient Mixture%'";
 		
 		String QueryString3 = "SELECT * from product_table where "+
@@ -56,7 +56,7 @@ th{
 		"section_id = (select section_id from section_table where section_name = 'PLANT TISSUE CULTURE') and " +
 		"product_name like '%Vitamins%'";
 		
-		String QueryString6 = "SELECT * from product_table where "+
+		String QueryString6 = "SELECT * from product_table where "+						// 6, 7, 8, 9, 10, 11 for 3 input type query
 		"material_no = 'PT103-5L' and " +
 		"packing = '5lt' and " +
 		"product_name like '%Vitamins%'";
@@ -86,7 +86,7 @@ th{
 		"section_id = (select section_id from section_table where section_name = 'PLANT TISSUE CULTURE') and " +
 		"product_name like '%supplement%'";
 		
-		String QueryString12 = "SELECT * from product_table where "+
+		String QueryString12 = "SELECT * from product_table where "+						// 12 for 5 input type query
 		"material_no = 'PHS001-5VL' and "+
 		"packing = '5vl' and "+
 		"hscode_id = (select hscode_id from hscode_table where hscode = '3822 00 90') and " +
@@ -96,19 +96,19 @@ th{
 		String[] QueryArr = {QueryString1, QueryString2, QueryString3, QueryString4, QueryString5, QueryString6, 
 				QueryString7, QueryString8, QueryString9, QueryString10, QueryString11, QueryString12};
 		int qno = 8;
-		rs = statement.executeQuery(QueryArr[qno-1]);
-	%>
+		rs = statement.executeQuery(QueryArr[qno-1]);								// qno reperesent the current executing queryString in the array QueryArr
+	%>	
 		fetching result based on query :
 		<br>
 		<h4><%=QueryArr[qno-1]%></h4>
 		<%
-		if (!rs.isBeforeFirst() ) {
+		if (!rs.isBeforeFirst() ) {										// checking if 0 rows are not returned from database
 			out.println("No results found!");
 		}else{
 		%>
 	<br>
 	<br>
-	<table class="table table-sm table-bordered">
+	<table class="table table-sm table-bordered">									// creating table to disply rows
 		<tr>
 			<th> S. No.</th>
 			<th> Material No</th>
@@ -159,7 +159,7 @@ th{
 		%>
 	</table>
 		 <%	
-		rs.close();
+		rs.close();											// finally closing all db variables and db connection
 		statement.close();
 		statementSect.close();
 		statementHscode.close();
