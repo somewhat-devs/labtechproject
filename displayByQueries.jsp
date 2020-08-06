@@ -108,7 +108,7 @@ th{
 		%>
 	<br>
 	<br>
-	<table class="table table-sm table-bordered">									// creating table to disply rows
+	<table class="table table-sm table-bordered">									<!-- creating table to disply rows -->
 		<tr>
 			<th> S. No.</th>
 			<th> Material No</th>
