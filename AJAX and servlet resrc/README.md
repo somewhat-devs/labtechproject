@@ -18,3 +18,4 @@
 ![project directory struc](https://github.com/somewhat-devs/labtechproject/blob/master/AJAX%20and%20servlet%20resrc/project%20direc%20structure.JPG?raw=true )
 
 #### Youtube link: 
+https://youtu.be/DyIDAoEzkNA
