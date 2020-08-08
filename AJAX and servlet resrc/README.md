@@ -4,7 +4,7 @@
 
 - create a __new servlet file__, 
     - left click on project -> new -> servlet -> set class name as *SearchService* -> click finish
-    - then copy the contents of *SearchService.jsp* to the new servlet file
+    - then copy the contents of *SearchService.java* to the new servlet file
 
 - copy complete js folder in _WebContent_ folder of the eclipse project
 
