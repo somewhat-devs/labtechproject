@@ -1,5 +1,7 @@
 ## Jquery AJAX and servelt communication
 
+- download *AJAX and servlet resrc.zip* file 
+
 - create a __new JSP file__, copy the contents of _temp_displayByFields.jsp_ to the new jsp
 
 - create a __new servlet file__, 
