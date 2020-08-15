@@ -37,3 +37,96 @@ th{
 		statement = connection.createStatement();
 		statementSect = connection.createStatement();
 		statementHscode = connection.createStatement();
+
+		String Query 1 = "SELECT * from product_table where "+				
+		"material_no like '%RM%' and "+
+		"packing = '100ml' and "+
+		"hscode_id = (select hscode_id from hscode_table where hscode = '3002 90 90') and " +
+		"section_id = (select section_id from section_table where section_name = 'CELL STRUCTURE') and " +
+		"product_name like '%erum%' ";
+                
+                String Query 2 = "SELECT * from product_table where "+				
+		"material_no like '%TC%' and "+
+		"packing = '500gm' and "+
+		"hscode_id = (select hscode_id from hscode_table where hscode = '3504 00 10') and " +
+		"section_id = (select section_id from section_table where section_name = 'CELL STRUCTURE') and " +
+		"product_name like '%erum%' ";
+                
+                String Query 3 = "SELECT * from product_table where "+				
+		"material_no like '%TC%' and "+
+		"packing = '100ml' and "+
+		"hscode_id = (select hscode_id from hscode_table where hscode = '3504 00 10') and " +
+		"section_id = (select section_id from section_table where section_name = 'CELL STRUCTURE') and " +
+		"product_name like '%erum%' ";
+		
+		String Query 2 = "SELECT * from product_table where "+ 
+		"material_no = 'PHS001-5VL' and "+
+		"packing = '5vl' and "+
+		"hscode_id = (select hscode_id from hscode_table where hscode = '3822 00 90') and " +
+		"section_id = (select section_id from section_table where section_name = 'CHEMICALS') and " +
+		"product_name like '%CNC%' ";
+		
+		String Query 3 = "SELECT * from product_table where "+ 
+		"material_no = 'PHS001-5VL' and "+
+		"packing = '5vl' and "+
+		"hscode_id = (select hscode_id from hscode_table where hscode = '3822 00 90') and " +
+		"section_id = (select section_id from section_table where section_name = 'LABORATORY AIDS') and " +
+		"product_name like '%CNC%' ";
+		
+		String Query 2 = "SELECT * from product_table where "+ 
+		"material_no = 'PHS001-5VL' and "+
+		"packing = '5vl' and "+
+		"hscode_id = (select hscode_id from hscode_table where hscode = '3822 00 90') and " +
+		"section_id = (select section_id from section_table where section_name = 'MICROBIOLOGY') and " +
+		"product_name like '%CNC%' ";
+		
+		String Query 2 = "SELECT * from product_table where "+ 
+		"material_no = 'PHS001-5VL' and "+
+		"packing = '5vl' and "+
+		"hscode_id = (select hscode_id from hscode_table where hscode = '3822 00 90') and " +
+		"section_id = (select section_id from section_table where section_name = 'MOLECUlAR BIOLOGY') and " +
+		"product_name like '%CNC%' ";
+		
+		String Query 2 = "SELECT * from product_table where "+ 
+		"material_no = 'PHS001-5VL' and "+
+		"packing = '5vl' and "+
+		"hscode_id = (select hscode_id from hscode_table where hscode = '3822 00 90') and " +
+		"section_id = (select section_id from section_table where section_name = 'PLANT TISSUE CULTURE') and " +
+		"product_name like '%CNC%' ";
+		
+		String Query 2 = "SELECT * from product_table where "+ 
+		"material_no = 'PHS001-5VL' and "+
+		"packing = '5vl' and "+
+		"hscode_id = (select hscode_id from hscode_table where hscode = '3822 00 90') and " +
+		"section_id = (select section_id from section_table where section_name = 'RPM & PLATE') and " +
+		"product_name like '%CNC%' ";
+		
+		String Query 2 = "SELECT * from product_table where "+ 
+		"material_no = 'MS2760F-25NO' and "+
+		"packing = '25nos' and "+
+		"hscode_id = (select hscode_id from hscode_table where hscode = '3822 00 90') and " +
+		"section_id = (select section_id from section_table where section_name = 'Viral Transport Media') and " +
+		"product_name like '%Transport Medium%' ";
+		
+		String Query 2 = "SELECT * from product_table where "+ 
+		"material_no = 'MS2760G-25NO' and "+
+		"packing = '25nos' and "+
+		"hscode_id = (select hscode_id from hscode_table where hscode = '3822 00 90') and " +
+		"section_id = (select section_id from section_table where section_name = 'Viral Transport Media') and " +
+		"product_name like '%Transport Medium%' ";
+		
+		String Query 2 = "SELECT * from product_table where "+ 
+		"material_no = 'MS2760H-25NO' and "+
+		"packing = '25nos' and "+
+		"hscode_id = (select hscode_id from hscode_table where hscode = '3822 00 90') and " +
+		"section_id = (select section_id from section_table where section_name = 'Viral Transport Media') and " +
+		"product_name like '%Transport Medium%' ";
+		
+		String Query 2 = "SELECT * from product_table where "+ 
+		"material_no = 'PHS001-5VL' and "+
+		"packing = '5vl' and "+
+		"hscode_id = (select hscode_id from hscode_table where hscode = '3822 00 90') and " +
+		"section_id = (select section_id from section_table where section_name = 'PLANT TISSUE CULTURE') and " +
+		"product_name like '%CNC%' ";
+
+		
