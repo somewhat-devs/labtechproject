@@ -107,11 +107,11 @@ public class SearchService extends HttpServlet {
 				QueryString = "SELECT * from product_table where section_id = (select section_id from section_table where section_name = '"+ section +"') and material_no like '%"+ materialno +"%' and product_name like '%"+ productname +"%' and hscode_id = (select hscode_id from hscode_table where hscode = '"+ hscode +"');";	
 				break;
 			
-            case "pnmnpkhs":
+                        case "pnmnpkhs":
 				QueryString = "SELECT * from product_table where product_name like '%"+ productname +"%' and material_no like '%"+ materialno +"%' and packing = '"+ packing +"' and hscode_id = (select hscode_id from hscode_table where hscode = '"+ hscode +"');";	
 				break;
 			
-            case "stpnpkhs":
+                        case "stpnpkhs":
 				QueryString = "SELECT * from product_table where section_id = (select section_id from section_table where section_name = '"+ section +"') and product_name like '%"+ productname +"%' and packing = '"+ packing +"' and hscode_id = (select hscode_id from hscode_table where hscode = '"+ hscode +"');";	
 				break;
 			}
