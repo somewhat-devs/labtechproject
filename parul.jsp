@@ -39,11 +39,12 @@ th{
 		statementHscode = connection.createStatement();
 
 		String Query 1 = "SELECT * from product_table where "+				
-		"material_no like '%TC048%' and "+
+		"material_no like '%TC%' and "+
 		"packing = '1kg' and "+
-		"hscode_id = (select hscode_id from hscode_table where hscode = '1701 99 90') and " +
+		"hscode_id = (select hscode_id from hscode_table where hscode = '1701 99 90' OR hscode = '1701 11 90' OR 
+		hscode = '1702 40 20' OR hscode = '1702 50 00' OR hscode = '1702 90 10' OR hscode = '' ) and " +
 		"section_id = (select section_id from section_table where section_name = 'CELL STRUCTURE') and " +
-		"product_name = Sucrose";
+		"product_name = Sucrose OR product_name = Lactose monohydrate";
                 
                 String Query 2 = "SELECT * from product_table where "+				
 		"material_no like '%TC1%' and "+
@@ -63,6 +64,20 @@ th{
 		"material_no like '%TC%' and "+
 		"packing = '' and "+
 		"hscode_id = (select hscode_id from hscode_table where hscode = '1702 50 00') and " +
+		"section_id = (select section_id from section_table where section_name = 'CELL STRUCTURE') and " +
+		"product_name like '%erum%' ";
+		
+		String Query 5 = "SELECT * from product_table where "+				
+		"material_no like '%TC%' and "+
+		"packing = '100ml' and "+
+		"hscode_id = (select hscode_id from hscode_table where hscode = '1702 90 10') and " +
+		"section_id = (select section_id from section_table where section_name = 'CELL STRUCTURE') and " +
+		"product_name like 'Maltose monohydrate' ";
+		
+		String Query 5 = "SELECT * from product_table where "+				
+		"material_no like '%TC%' and "+
+		"packing = '100ml' and "+
+		"hscode_id = (select hscode_id from hscode_table where hscode = '1702 90 10') and " +
 		"section_id = (select section_id from section_table where section_name = 'CELL STRUCTURE') and " +
 		"product_name like '%erum%' ";
 		
