@@ -47,7 +47,7 @@ public class SearchService extends HttpServlet {
 			String productname = request.getParameter("productname").trim();
 			String hscode = request.getParameter("hscode").trim();
 			String section = request.getParameter("section").trim();		// check which attributes are provided by user, based on that query is written and executed.
-			String customerrate = request.getParameter("crate").trim();
+			// String customerrate = request.getParameter("crate").trim();
 			
 			if (!materialno.equals(""))
 				action += "mn";
@@ -59,17 +59,23 @@ public class SearchService extends HttpServlet {
 				action += "hs";
 			if (!section.equals(""))
 				action += "st";
-			if (!crate.equals(""))
-				action += "cr";
+			// if (!crate.equals(""))
+				// action += "cr";			
+			
+			/* we couldn't use the queries with cr (customer_rate) coz theirs no input field for it, customer_rate is always null. 
+			so remove all cases having cr. 
+			U were given to generate queries for packing field, so possible cases will be:
+				pk, mlpk, pkpn, pkhs, pkst, mlpkpn, mlppkhs, mlpkst, pkpnhs, pkpnst, pkhsst. 
+			*/
 
 			switch (action) {
 			//niharika
 			case "pk":
-				QueryString = "SELECT * from product_table where packing = '"+ packing ;
+				QueryString = "SELECT * from product_table where packing = '"+ packing +"';";
 				break;
 							
 			case "pkcr":
-				QueryString = "SELECT * from product_table where packing = '"+ packing +"' and customer_rate= '"+crate;
+				// QueryString = "SELECT * from product_table where packing = '"+ packing +"' and customer_rate= '"+crate;
 				break;
 			
 			case "pkpn":
@@ -77,7 +83,7 @@ public class SearchService extends HttpServlet {
 				break;
 			
 			case "pkcrpn":
-				QueryString = "SELECT * from product_table where packing = '"+ packing +"' and customer_rate= '"+ crate +"'and product_name like '%"+ productname +"%';";		
+				// QueryString = "SELECT * from product_table where packing = '"+ packing +"' and customer_rate= '"+ crate +"'and product_name like '%"+ productname +"%';";		
 				break;
 				
 			case "pkpnst":
@@ -85,7 +91,7 @@ public class SearchService extends HttpServlet {
 				break;
 			
 			case "pkst":
-				QueryString = "SELECT * from product_table where packing = '"+ packing +"' and section_id = (select section_id from section_table where section_name = '"+ section +"') and customer_rate= '\"+ crate +\"';";		
+				QueryString = "SELECT * from product_table where packing = '"+ packing +"' and section_id = (select section_id from section_table where section_name = '"+ section +"') ;";		
 				break;
 			
 			case "mnpkpnst":
@@ -105,11 +111,11 @@ public class SearchService extends HttpServlet {
 				break;
 			
 			case "pnhscrpkst":
-				QueryString = "SELECT * from product_table where hscode_id = (select hscode_id from hscode_table where hscode = '"+ hscode +"') and packing = '"+ packing +"' and section_id = (select section_id from section_table where section_name = '"+ section +"') and customer_rate= '"+crate +"' and product_name like '%"+ productname +"%';";		
+				// QueryString = "SELECT * from product_table where hscode_id = (select hscode_id from hscode_table where hscode = '"+ hscode +"') and packing = '"+ packing +"' and section_id = (select section_id from section_table where section_name = '"+ section +"') and customer_rate= '"+crate +"' and product_name like '%"+ productname +"%';";		
 				break;
 			
-			case "pkmnpkpnhsst":
-				QueryString = "SELECT * from product_table where packing = '"+ packing +"' and material_no like '%"+ materialno +"%' and packing = '"+ packing +"' and hscode_id = (select hscode_id from hscode_table where hscode = '"+ hscode +"') and section_id = (select section_id from section_table where section_name = '"+ section +"') and product_name like '%"+ productname +"%';";	
+			case "mnpkpnhsst":
+				QueryString = "SELECT * from product_table where packing = '"+ packing +"' and material_no like '%"+ materialno +"%' and hscode_id = (select hscode_id from hscode_table where hscode = '"+ hscode +"') and section_id = (select section_id from section_table where section_name = '"+ section +"') and product_name like '%"+ productname +"%';";	
 				break;
 			}
 
