@@ -1,0 +1,21 @@
+<!Doctype html>
+<html>
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+</head>
+<body>
+    Before Discount<input type="number" id="cBalance" value="">
+    <br><br> Discount Applied <input type="number" id="chDiscount">
+    <br><br> After Discount <input type="number" id="result">
+    <script>
+        $(document).on("change keyup blur", "#chDiscount", function() {
+            var main = $('#cBalance').val();
+            var disc = $('#chDiscount').val();
+            var dec = (disc / 100).toFixed(2); //its convert 10 into 0.10
+            var mult = main * dec; // gives the value for subtract from main value
+            var discont = main - mult;
+            $('#result').val(discont);
+        });
+    </script>
+</body>
+</html>
