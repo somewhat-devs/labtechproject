@@ -1,0 +1,90 @@
+body {
+	margin: 3%;
+	background: #f8f8f8;
+}
+
+.txtfld-tbl, #main-tbl {
+	width: 100% !important;
+	border-bottom: 0;
+}
+
+.txtfld-tbl td {
+	padding-right: 5%;
+	padding-bottom: 2%;
+	vertical-align: top;
+}
+
+.table {
+	background: #fff;
+	box-shadow: 0px 0px 20px grey;
+}
+
+.table thead th , .td-center {
+	text-align: center;
+	vertical-align: middle;
+}
+
+.table tbody td {
+	vertical-align: middle;
+}
+
+.errormsg {
+	color: red;
+	font-size: 12px;
+	display: none;
+}
+
+.loadimg {
+	width: 25px;
+	display: none;
+	margin-inline-start: 10px;
+}
+
+.clr-srchinp-btn {
+	cursor: pointer;
+	padding: 7px;
+	font-size: 13px;
+}
+
+.bill-inputs{
+	-moz-appearance: textfield;
+	text-align: center;
+}
+
+.billinput-divs input{
+	width: 60px;	
+}
+
+#qty-input{
+	width: 15px;
+}
+
+.invalid{
+	box-shadow: 0px 0px 0px 0.15rem #ff000088 !important;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.bill-inputs:invalid{
+	box-shadow: none;
+}
+
+.input-cols{
+	width: 110px;
+}
+
+.billinput-divs{
+	display: flex;
+}
+
+.billinput-labels{
+	margin-left: 5px;
+}
+
+hr{
+	border-top-color: rgba(0, 0, 0, 0.7);
+}
