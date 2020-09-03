@@ -1,4 +1,3 @@
-
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -41,73 +40,58 @@ public class SearchService extends HttpServlet {
 			statementSect = connection.createStatement();
 			statementHscode = connection.createStatement();
 		
-			String action = "", QueryString = "";
+			String QueryString = "SELECT * from product_table where ", custrateqr = "consumer_rate <> 'On Request' and cast(consumer_rate as unsigned) ";
 			String materialno = request.getParameter("materialno").trim();				// get form parameters from request
-			String packing = request.getParameter("packing").trim();
 			String productname = request.getParameter("productname").trim();
 			String hscode = request.getParameter("hscode").trim();
 			String section = request.getParameter("section").trim();					// check which attributes are provided by user, based on that query is written and executed.
-		
-			if (!materialno.equals(""))
-				action += "mn";
-			if (!packing.equals(""))
-				action += "pk";
-			if (!productname.equals(""))
-				action += "pn";
-			if (!hscode.equals(""))
-				action += "hs";
-			if (!section.equals(""))
-				action += "st";
-
-			switch (action) {
-			case "pn":
-				QueryString = "SELECT * from product_table where product_name like '%"+ productname +"%';";
-				break;
+			String custrate = request.getParameter("custrate").trim();	
+			int qrfor1 = 0 ;		
 			
-			case "mnpn":
-				QueryString = "SELECT * from product_table where material_no like '%"+ materialno +"%' and product_name like '%"+ productname +"%';";		
-				break;
-			
-			case "pkpn":
-				QueryString = "SELECT * from product_table where packing = '"+ packing +"' and product_name like '%"+ productname +"%';";		
-				break;
-			
-			case "pnhs":
-				QueryString = "SELECT * from product_table where hscode_id = (select hscode_id from hscode_table where hscode = '"+ hscode +"') and product_name like '%"+ productname +"%';";			
-				break;
-			
-			case "pnst":
-				QueryString = "SELECT * from product_table where section_id = (select section_id from section_table where section_name = '"+ section +"') and product_name like '%"+ productname +"%';";		
-				break;
-			
-			case "mnpkpn":
-				QueryString = "SELECT * from product_table where material_no like '%"+ materialno +"%' and packing = '"+ packing +"' and product_name like '%"+ productname +"%';";		
-				break;
-			
-			case "mnpnhs":
-				QueryString = "SELECT * from product_table where material_no like '%"+ materialno +"%' and hscode_id = (select hscode_id from hscode_table where hscode = '"+ hscode +"') and  product_name like '%"+ productname +"%';";		
-				break;
-			
-			case "mnpnst":
-				QueryString = "SELECT * from product_table where material_no like '%"+ materialno +"%' and section_id = (select section_id from section_table where section_name = '"+ section +"') and product_name like '%"+ productname +"%';";
-				break;
-			
-			case "pkpnhs":
-				QueryString = "SELECT * from product_table where packing = '"+ packing +"' and hscode_id = (select hscode_id from hscode_table where hscode = '"+ hscode +"') and product_name like '%"+ productname +"%';";		
-				break;
-			
-			case "pkpnst":
-				QueryString = "SELECT * from product_table where packing = '"+ packing +"' and section_id = (select section_id from section_table where section_name = '"+ section +"') and product_name like '%"+ productname +"%';";		
-				break;
-			
-			case "pnhsst":
-				QueryString = "SELECT * from product_table where hscode_id = (select hscode_id from hscode_table where hscode = '"+ hscode +"') and section_id = (select section_id from section_table where section_name = '"+ section +"') and product_name like '%"+ productname +"%';";		
-				break;
-			
-			case "mnpkpnhsst":
-				QueryString = "SELECT * from product_table where material_no like '%"+ materialno +"%' and packing = '"+ packing +"' and hscode_id = (select hscode_id from hscode_table where hscode = '"+ hscode +"') and section_id = (select section_id from section_table where section_name = '"+ section +"') and product_name like '%"+ productname +"%';";	
-				break;
+			if (!materialno.equals("")) {
+				if (qrfor1 == 0) 	qrfor1 = 1;
+				else 				QueryString += "and ";
+				
+				QueryString += "material_no like '%"+ materialno +"%' ";
 			}
+			if (!productname.equals("")){
+				if (qrfor1 == 0) 	qrfor1 = 1;
+				else 				QueryString += "and ";
+				
+				QueryString += "product_name like '%"+ productname +"%' ";
+			}
+			if (!hscode.equals("")){
+				if (qrfor1 == 0) 	qrfor1 = 1;
+				else 				QueryString += "and ";
+				
+				QueryString += "hscode_id = (select hscode_id from hscode_table where hscode = '"+ hscode +"')";
+			}
+			if (!section.equals("")){
+				if (qrfor1 == 0) 	qrfor1 = 1;
+				else 				QueryString += "and ";
+				
+				QueryString += "section_id = (select section_id from section_table where section_name = '"+ section +"') ";
+			}
+			if (!custrate.equals("none")) {
+				
+				switch (custrate) {
+				case "1":	custrateqr += "< 500 ";						break;
+				case "2":	custrateqr += "between 500 and 1000 ";		break;
+				case "3":	custrateqr += "between 1000 and 5000 ";		break;
+				case "4":	custrateqr += "between 5000 and 10000 ";	break;
+				case "5":	custrateqr += "between 10000 and 25000 ";	break;
+				case "6":	custrateqr += "between 25000 and 100000 ";	break;
+				case "7":	custrateqr += "> 100000 ";					break;
+				}
+
+				if (qrfor1 == 0) 	qrfor1 = 1;
+				else 				QueryString += "and ";
+				
+				QueryString += custrateqr;
+			}
+			QueryString += ";";
+			
+//			log("- "+materialno+" - "+packing+" - "+productname+" - "+hscode+" - "+section+" - "+custrateqr+" - "+QueryString);
 
 			List<List<String>> responseArr = new ArrayList<List<String>>();
 			
@@ -146,7 +130,6 @@ public class SearchService extends HttpServlet {
 			ex.printStackTrace();
 		}
 
-//		log("- "+materialno+" - "+packing+" - "+productname+" - "+hscode+" - "+section+" - "+action);
 	}
 
 }
