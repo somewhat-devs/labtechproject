@@ -49,7 +49,7 @@ public class ExportService extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
 		String action = request.getParameter("action");
-		String[] tblheads = { "S. No.", "HSN Code", "Item name with description", "Make", "Qty.", "Price",	"Discount", "GST" };
+		String[] tblheads = { "S. No.", "HSN Code", "Item name with description", "Make", "Qty.", "Unit Price", "Discount", "GST" };
 		String prodlist[][] = new Gson().fromJson(request.getParameter("prodlist"), String[][].class);
 		String termsNcondition = request.getParameter("termsNcondition");
 
