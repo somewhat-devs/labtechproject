@@ -230,7 +230,7 @@
 							<th style="width: 450px;">Item Name with Description</th>
 							<th>Make/Brand</th>
 							<th class="input-cols">Quantity</th>
-							<th>Price/Rate</th>
+							<th>Unit Price/Rate</th>
 							<th class="input-cols">Discount</th>
 							<th class="input-cols">GST</th>
 							<th>remove item</th>
