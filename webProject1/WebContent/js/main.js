@@ -304,8 +304,8 @@ $(document).ready(function() {
 		    var temp = [];
 		    $(e).children().each(function(i,e){
 		        if (i==0 || i==2 || i==3) 			temp.push($(e).html());
-		        if (i==1 || i==4 || i==5)			temp.push($(e).find('input').val());
-		        if (i==6 || i==7) 					temp.push($(e).find('input').val()+"%");
+		        if (i==1 || i==4 || i==5 || i==6 || i==7)	temp.push($(e).find('input').val());
+// 		        if (i==6 || i==7) 					temp.push($(e).find('input').val());
 		    });
 		    billProdList.push(temp);
 		});
