@@ -252,13 +252,13 @@ public class SearchService extends HttpServlet {
 				
 				statement = connection.createStatement();
 				QueryString = "INSERT INTO product_table(material_no, brand_id, packing, product_name, consumer_rate, gst_rate, hsncode_id, section_id) VALUES ("
-						+ "'"+materialno+"', "+brand_id+", "+packing+", '"+productname+"', '"+consumerrate+"', "+gstrate+", "+hsncode_id+", "+section_id+")";
+						+ "'"+materialno+"', "+brand_id+", "+packing+", '"+productname+"', "+consumerrate+", "+gstrate+", "+hsncode_id+", "+section_id+")";
 				rowsInserted = statement.executeUpdate(QueryString);
 				statement.close();
 				connection.close();
 				
 				if (rowsInserted>0)	response.getWriter().write("success");
-				else				response.getWriter().write("fail");
+				else			response.getWriter().write("fail");
 				
 			}
 			
