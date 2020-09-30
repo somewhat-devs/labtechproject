@@ -1,0 +1,1525 @@
+<html><head>
+<meta charset="ISO-8859-1">
+<title>Create new product</title>
+<script src="js/jquery-3.5.0.min.js"></script>
+<script type="text/javascript" src="js/main.js"></script>
+<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="css/style.css">
+</head>
+<body>
+	<h2>Create new product.</h2>
+	
+	
+	<div class="row row-div">
+		<div class="col-lg-12">
+			<p class="redtext">* required fields</p>
+			<table class="txtfld-tbl">
+				<tbody><tr>
+					<td><label for="materialno">Material No/Catalog Id: <span class="redtext">*</span></label> <!-- creating textFields and dropdowns  -->
+						<div class="input-group">
+							<input type="text" id="materialno" class="form-control create-inputs-req" name="materialno" placeholder="Enter material no..." autofocus="">
+						</div>
+					</td>
+						
+					<td><label for="brand">Brand/Make:</label>
+						<div class="input-group">
+							<input type="text" id="brand" class="form-control" list="brandlist" name="brand" placeholder="Enter brand/make...">
+						</div>
+						<datalist id="brandlist">
+							
+							<option value="Himedia">Himedia</option>
+							
+							<option value="Borosil">Borosil</option>
+							
+							<option value="Remi">Remi</option>
+							
+						</datalist>
+					</td>
+					
+					<td><label for="packing">packing:</label>
+						<div class="input-group">
+							<input type="text" id="packing" class="form-control" name="packing" placeholder="Enter packing type...">
+						</div>
+					</td>
+				</tr>
+				
+				<tr>
+					<td colspan="3"><label for="productname">Product Name: <span class="redtext">*</span></label>
+						<div class="input-group">
+							<textarea id="productname" class="form-control create-inputs-req" name="productname" placeholder="Enter product description..." rows="2"></textarea>
+						</div>
+					</td>
+				</tr>
+
+				<tr>
+					<td><label for="consumerrate">Consumer rate: <span class="redtext">*</span></label>
+						<div class="input-group">
+							<input type="text" id="consumerrate" class="form-control create-inputs-num" name="consumerrate" placeholder="Enter consumer rate...">
+						</div>
+						<span class="errormsg">*only numbers allowed</span>
+					</td>
+
+					<td><label for="gstrate">GST rate:</label>
+						<div class="input-group">
+							<input type="text" id="gstrate" class="form-control create-inputs-num" name="gstrate" placeholder="Enter GST rate...">
+						</div>
+						<span class="errormsg">*only numbers allowed</span>
+					</td>
+				</tr>
+
+				<tr>
+					<td><label for="hscode">HSN code:</label>
+						<div class="input-group">
+							<input type="text" id="hscode" class="form-control" list="hscodelist" name="hscode" placeholder="Enter HSN code...">
+						</div>						
+						<datalist id="hscodelist">
+							
+							<option value="4823 20 00">4823 20 00</option>
+							
+							<option value="3821 00 00">3821 00 00</option>
+							
+							<option value="3002 90 30">3002 90 30</option>
+							
+							<option value="3002 90 90">3002 90 90</option>
+							
+							<option value="3822 00 90">3822 00 90</option>
+							
+							<option value="9011 20 00">9011 20 00</option>
+							
+							<option value="8419 90 90">8419 90 90</option>
+							
+							<option value="9011 90 00">9011 90 00</option>
+							
+							<option value="2915 21 00">2915 21 00</option>
+							
+							<option value="2806 10 00">2806 10 00</option>
+							
+							<option value="2811 90 00">2811 90 00</option>
+							
+							<option value="2808 00 10">2808 00 10</option>
+							
+							<option value="2809 20 10">2809 20 10</option>
+							
+							<option value="2811 29 90">2811 29 90</option>
+							
+							<option value="2807 00 00">2807 00 00</option>
+							
+							<option value="2912 11 00">2912 11 00</option>
+							
+							<option value="2907 11 10">2907 11 10</option>
+							
+							<option value="3402 90 19">3402 90 19</option>
+							
+							<option value="2914 11 00">2914 11 00</option>
+							
+							<option value="2926 90 00">2926 90 00</option>
+							
+							<option value="2921 41 10">2921 41 10</option>
+							
+							<option value="2902 20 00">2902 20 00</option>
+							
+							<option value="2906 21 00">2906 21 00</option>
+							
+							<option value="2905 13 00">2905 13 00</option>
+							
+							<option value="2903 61 10">2903 61 10</option>
+							
+							<option value="2903 13 00">2903 13 00</option>
+							
+							<option value="2902 11 00">2902 11 00</option>
+							
+							<option value="2903 12 00">2903 12 00</option>
+							
+							<option value="2922 12 00">2922 12 00</option>
+							
+							<option value="2909 11 00">2909 11 00</option>
+							
+							<option value="2932 99 00">2932 99 00</option>
+							
+							<option value="2915 31 00">2915 31 00</option>
+							
+							<option value="2905 31 00">2905 31 00</option>
+							
+							<option value="2914 13 00">2914 13 00</option>
+							
+							<option value="2901 10 00">2901 10 00</option>
+							
+							<option value="2905 11 00">2905 11 00</option>
+							
+							<option value="2710 19 90">2710 19 90</option>
+							
+							<option value="2905 32 00">2905 32 00</option>
+							
+							<option value="2905 12 20">2905 12 20</option>
+							
+							<option value="2933 31 00">2933 31 00</option>
+							
+							<option value="2832 11 00">2832 11 00</option>
+							
+							<option value="2902 00 00">2902 00 00</option>
+							
+							<option value="2903 22 00">2903 22 00</option>
+							
+							<option value="2921 19 10">2921 19 10</option>
+							
+							<option value="2851 00 10">2851 00 10</option>
+							
+							<option value="2902 44 00">2902 44 00</option>
+							
+							<option value="2912 19 10">2912 19 10</option>
+							
+							<option value="2907 19 00">2907 19 00</option>
+							
+							<option value="2905 45 00">2905 45 00</option>
+							
+							<option value="2924 29 90">2924 29 90</option>
+							
+							<option value="2828 90 90">2828 90 90</option>
+							
+							<option value="3402 12 00">3402 12 00</option>
+							
+							<option value="2906 29 90">2906 29 90</option>
+							
+							<option value="2905 42 90">2905 42 90</option>
+							
+							<option value="3402 90 99">3402 90 99</option>
+							
+							<option value="2922 13 00">2922 13 00</option>
+							
+							<option value="2930 90 90">2930 90 90</option>
+							
+							<option value="2903 15 00">2903 15 00</option>
+							
+							<option value="7017 90 90">7017 90 90</option>
+							
+							<option value="3920 10 19">3920 10 19</option>
+							
+							<option value="9017 20 10">9017 20 10</option>
+							
+							<option value="7326 90 00">7326 90 00</option>
+							
+							<option value="7010 90 00">7010 90 00</option>
+							
+							<option value="7017 20 00">7017 20 00</option>
+							
+							<option value="3923 90 90">3923 90 90</option>
+							
+							<option value="3926 90 99">3926 90 99</option>
+							
+							<option value="3923 30 90">3923 30 90</option>
+							
+							<option value="4819 20 10">4819 20 10</option>
+							
+							<option value="2936 27 00">2936 27 00</option>
+							
+							<option value="2936 29 90">2936 29 90</option>
+							
+							<option value="2933 99 00">2933 99 00</option>
+							
+							<option value="2918 11 90">2918 11 90</option>
+							
+							<option value="2941 90 90">2941 90 90</option>
+							
+							<option value="2941 90 19">2941 90 19</option>
+							
+							<option value="2923 90 00">2923 90 00</option>
+							
+							<option value="3504 00 99">3504 00 99</option>
+							
+							<option value="2941 10 10">2941 10 10</option>
+							
+							<option value="2930 90 99">2930 90 99</option>
+							
+							<option value="2922 49 90">2922 49 90</option>
+							
+							<option value="2936 29 10">2936 29 10</option>
+							
+							<option value="2936 24 00">2936 24 00</option>
+							
+							<option value="2936 25 00">2936 25 00</option>
+							
+							<option value="2936 23 90">2936 23 90</option>
+							
+							<option value="2936 22 10">2936 22 10</option>
+							
+							<option value="2936 21 00">2936 21 00</option>
+							
+							<option value="2936 26 90">2936 26 90</option>
+							
+							<option value="2936 28 00">2936 28 00</option>
+							
+							<option value="2922 19 90">2922 19 90</option>
+							
+							<option value="2933 59 90">2933 59 90</option>
+							
+							<option value="2941 40 00">2941 40 00</option>
+							
+							<option value="2941 30 90">2941 30 90</option>
+							
+							<option value="2941 20 10">2941 20 10</option>
+							
+							<option value="2939 99 00">2939 99 00</option>
+							
+							<option value="2933 69 10">2933 69 10</option>
+							
+							<option value="2935 00 90">2935 00 90</option>
+							
+							<option value="2934 99 00">2934 99 00</option>
+							
+							<option value="2922 50 90">2922 50 90</option>
+							
+							<option value="2941 50 00">2941 50 00</option>
+							
+							<option value="2941 10 20">2941 10 20</option>
+							
+							<option value="2930 90 40">2930 90 40</option>
+							
+							<option value="2941 10 30">2941 10 30</option>
+							
+							<option value="2919 90 50">2919 90 50</option>
+							
+							<option value="2933 39 90">2933 39 90</option>
+							
+							<option value="2938 10 00">2938 10 00</option>
+							
+							<option value="2918 19 90">2918 19 90</option>
+							
+							<option value="2939 19 00">2939 19 00</option>
+							
+							<option value="2933 29 90">2933 29 90</option>
+							
+							<option value="3808 94 00">3808 94 00</option>
+							
+							<option value="3504 00 10">3504 00 10</option>
+							
+							<option value="2805 19 00">2805 19 00</option>
+							
+							<option value="2102 10 90">2102 10 90</option>
+							
+							<option value="1302 31 00">1302 31 00</option>
+							
+							<option value="2842 90 10">2842 90 10</option>
+							
+							<option value="1702 30 39">1702 30 39</option>
+							
+							<option value="1702 11 10">1702 11 10</option>
+							
+							<option value="3503 00 10">3503 00 10</option>
+							
+							<option value="2905 43 00">2905 43 00</option>
+							
+							<option value="2501 00 90">2501 00 90</option>
+							
+							<option value="2940 00 00">2940 00 00</option>
+							
+							<option value="2925 29 90">2925 29 90</option>
+							
+							<option value="2924 19 00">2924 19 00</option>
+							
+							<option value="3501 10 00">3501 10 00</option>
+							
+							<option value="2922 42 90">2922 42 90</option>
+							
+							<option value="2922 41 00">2922 41 00</option>
+							
+							<option value="2930 40 00">2930 40 00</option>
+							
+							<option value="3507 90 99">3507 90 99</option>
+							
+							<option value="3212 90 90">3212 90 90</option>
+							
+							<option value="2932 20 10">2932 20 10</option>
+							
+							<option value="1702 30 20">1702 30 20</option>
+							
+							<option value="2918 15 90">2918 15 90</option>
+							
+							<option value="3502 11 00">3502 11 00</option>
+							
+							<option value="2918 30 90">2918 30 90</option>
+							
+							<option value="2833 30 10">2833 30 10</option>
+							
+							<option value="1108 13 00">1108 13 00</option>
+							
+							<option value="2842 90 90">2842 90 90</option>
+							
+							<option value="1201 90 00">1201 90 00</option>
+							
+							<option value="3505 10 10">3505 10 10</option>
+							
+							<option value="2827 39 90">2827 39 90</option>
+							
+							<option value="2918 14 00">2918 14 00</option>
+							
+							<option value="2836 99 90">2836 99 90</option>
+							
+							<option value="2917 11 90">2917 11 90</option>
+							
+							<option value="2915 29 90">2915 29 90</option>
+							
+							<option value="2903 99 90">2903 99 90</option>
+							
+							<option value="2909 41 00">2909 41 00</option>
+							
+							<option value="2815 20 00">2815 20 00</option>
+							
+							<option value="2921 42 90">2921 42 90</option>
+							
+							<option value="2841 70 90">2841 70 90</option>
+							
+							<option value="2922 11 90">2922 11 90</option>
+							
+							<option value="2921 19 90">2921 19 90</option>
+							
+							<option value="2909 44 00">2909 44 00</option>
+							
+							<option value="2906 13 90">2906 13 90</option>
+							
+							<option value="2901 29 90">2901 29 90</option>
+							
+							<option value="2916 15 90">2916 15 90</option>
+							
+							<option value="2918 99 00">2918 99 00</option>
+							
+							<option value="2825 10 90">2825 10 90</option>
+							
+							<option value="1108 20 00">1108 20 00</option>
+							
+							<option value="2712 90 90">2712 90 90</option>
+							
+							<option value="2519 90 10">2519 90 10</option>
+							
+							<option value="2909 49 00">2909 49 00</option>
+							
+							<option value="3907 20 90">3907 20 90</option>
+							
+							<option value="2841 50 90">2841 50 90</option>
+							
+							<option value="2835 39 00">2835 39 00</option>
+							
+							<option value="2905 12 10">2905 12 10</option>
+							
+							<option value="2837 20 20">2837 20 20</option>
+							
+							<option value="2811 22 00">2811 22 00</option>
+							
+							<option value="2850 00 50">2850 00 50</option>
+							
+							<option value="2917 19 90">2917 19 90</option>
+							
+							<option value="3204 19 90">3204 19 90</option>
+							
+							<option value="2833 11 00">2833 11 00</option>
+							
+							<option value="2904 10 90">2904 10 90</option>
+							
+							<option value="2850 00 49">2850 00 49</option>
+							
+							<option value="2840 19 00">2840 19 00</option>
+							
+							<option value="2840 20 90">2840 20 90</option>
+							
+							<option value="2827 51 10">2827 51 10</option>
+							
+							<option value="2827 60 90">2827 60 90</option>
+							
+							<option value="2843 29 00">2843 29 00</option>
+							
+							<option value="2836 50 00">2836 50 00</option>
+							
+							<option value="2835 24 00">2835 24 00</option>
+							
+							<option value="2918 13 90">2918 13 90</option>
+							
+							<option value="2912 19 90">2912 19 90</option>
+							
+							<option value="2902 19 00">2902 19 00</option>
+							
+							<option value="3502 90 00">3502 90 00</option>
+							
+							<option value="2834 29 20">2834 29 20</option>
+							
+							<option value="2914 50 00">2914 50 00</option>
+							
+							<option value="2920 90 20">2920 90 20</option>
+							
+							<option value="7903 90 00">7903 90 00</option>
+							
+							<option value="2819 10 00">2819 10 00</option>
+							
+							<option value="2915 39 90">2915 39 90</option>
+							
+							<option value="2904 20 90">2904 20 90</option>
+							
+							<option value="2933 49 00">2933 49 00</option>
+							
+							<option value="2919 90 90">2919 90 90</option>
+							
+							<option value="2801 20 00">2801 20 00</option>
+							
+							<option value="2836 91 00">2836 91 00</option>
+							
+							<option value="3802 10 00">3802 10 00</option>
+							
+							<option value="2712 20 00">2712 20 00</option>
+							
+							<option value="2852 90 00">2852 90 00</option>
+							
+							<option value="2827 31 00">2827 31 00</option>
+							
+							<option value="2917 19 10">2917 19 10</option>
+							
+							<option value="2833 22 90">2833 22 90</option>
+							
+							<option value="2827 60 10">2827 60 10</option>
+							
+							<option value="2927 00 90">2927 00 90</option>
+							
+							<option value="2923 10 00">2923 10 00</option>
+							
+							<option value="2852 10 00">2852 10 00</option>
+							
+							<option value="2918 29 90">2918 29 90</option>
+							
+							<option value="2826 19 90">2826 19 90</option>
+							
+							<option value="2826 19 10">2826 19 10</option>
+							
+							<option value="2841 80 90">2841 80 90</option>
+							
+							<option value="2918 21 90">2918 21 90</option>
+							
+							<option value="2905 44 00">2905 44 00</option>
+							
+							<option value="3824 90 90">3824 90 90</option>
+							
+							<option value="2833 40 00">2833 40 00</option>
+							
+							<option value="2903 39 19">2903 39 19</option>
+							
+							<option value="7903 99 00">7903 99 00</option>
+							
+							<option value="2933 21 00">2933 21 00</option>
+							
+							<option value="2827 59 90">2827 59 90</option>
+							
+							<option value="2915 12 90">2915 12 90</option>
+							
+							<option value="3105 10 00">3105 10 00</option>
+							
+							<option value="2914 39 90">2914 39 90</option>
+							
+							<option value="2835 25 00">2835 25 00</option>
+							
+							<option value="2812 10 90">2812 10 90</option>
+							
+							<option value="2931 90 90">2931 90 90</option>
+							
+							<option value="2915 70 90">2915 70 90</option>
+							
+							<option value="2918 16 10">2918 16 10</option>
+							
+							<option value="2829 90 30">2829 90 30</option>
+							
+							<option value="2829 90 10">2829 90 10</option>
+							
+							<option value="2827 39 20">2827 39 20</option>
+							
+							<option value="2833 29 90">2833 29 90</option>
+							
+							<option value="2908 99 90">2908 99 90</option>
+							
+							<option value="2815 11 10">2815 11 10</option>
+							
+							<option value="2834 10 10">2834 10 10</option>
+							
+							<option value="7601 10 90">7601 10 90</option>
+							
+							<option value="2846 10 90">2846 10 90</option>
+							
+							<option value="3105 40 00">3105 40 00</option>
+							
+							<option value="2933 52 00">2933 52 00</option>
+							
+							<option value="1521 90 90">1521 90 90</option>
+							
+							<option value="2834 29 90">2834 29 90</option>
+							
+							<option value="2828 90 11">2828 90 11</option>
+							
+							<option value="2810 00 20">2810 00 20</option>
+							
+							<option value="2827 39 30">2827 39 30</option>
+							
+							<option value="7019 90 10">7019 90 10</option>
+							
+							<option value="1302 32 90">1302 32 90</option>
+							
+							<option value="1301 90 19">1301 90 19</option>
+							
+							<option value="2507 00 29">2507 00 29</option>
+							
+							<option value="0402 10 90">0402 10 90</option>
+							
+							<option value="2835 22 00">2835 22 00</option>
+							
+							<option value="3912 90 90">3912 90 90</option>
+							
+							<option value="2840 30 00">2840 30 00</option>
+							
+							<option value="2825 20 00">2825 20 00</option>
+							
+							<option value="2825 90 40">2825 90 40</option>
+							
+							<option value="2816 40 00">2816 40 00</option>
+							
+							<option value="2835 26 90">2835 26 90</option>
+							
+							<option value="2821 10 10">2821 10 10</option>
+							
+							<option value="2833 21 00">2833 21 00</option>
+							
+							<option value="2830 90 10">2830 90 10</option>
+							
+							<option value="2918 21 10">2918 21 10</option>
+							
+							<option value="2907 15 90">2907 15 90</option>
+							
+							<option value="2804 61 00">2804 61 00</option>
+							
+							<option value="2916 19 90">2916 19 90</option>
+							
+							<option value="2832 30 90">2832 30 90</option>
+							
+							<option value="2916 31 90">2916 31 90</option>
+							
+							<option value="3204 12 99">3204 12 99</option>
+							
+							<option value="1701 99 90">1701 99 90</option>
+							
+							<option value="2836 60 00">2836 60 00</option>
+							
+							<option value="2833 27 00">2833 27 00</option>
+							
+							<option value="2922 49 10">2922 49 10</option>
+							
+							<option value="2825 90 90">2825 90 90</option>
+							
+							<option value="2914 69 90">2914 69 90</option>
+							
+							<option value="1702 40 39">1702 40 39</option>
+							
+							<option value="3913 90 90">3913 90 90</option>
+							
+							<option value="2822 00 10">2822 00 10</option>
+							
+							<option value="2841 90 00">2841 90 00</option>
+							
+							<option value="2908 19 00">2908 19 00</option>
+							
+							<option value="2906 11 00">2906 11 00</option>
+							
+							<option value="2907 15 10">2907 15 10</option>
+							
+							<option value="2827 35 00">2827 35 00</option>
+							
+							<option value="2825 40 00">2825 40 00</option>
+							
+							<option value="2836 40 00">2836 40 00</option>
+							
+							<option value="2832 20 90">2832 20 90</option>
+							
+							<option value="2834 21 00">2834 21 00</option>
+							
+							<option value="7106 10 00">7106 10 00</option>
+							
+							<option value="2835 29 30">2835 29 30</option>
+							
+							<option value="2918 12 00">2918 12 00</option>
+							
+							<option value="2817 00 10">2817 00 10</option>
+							
+							<option value="2914 70 90">2914 70 90</option>
+							
+							<option value="2916 39 90">2916 39 90</option>
+							
+							<option value="2922 39 00">2922 39 00</option>
+							
+							<option value="2846 90 90">2846 90 90</option>
+							
+							<option value="2933 11 00">2933 11 00</option>
+							
+							<option value="2825 90 10">2825 90 10</option>
+							
+							<option value="2933 79 00">2933 79 00</option>
+							
+							<option value="2933 69 90">2933 69 90</option>
+							
+							<option value="2842 10 00">2842 10 00</option>
+							
+							<option value="2843 90 19">2843 90 19</option>
+							
+							<option value="2907 21 00">2907 21 00</option>
+							
+							<option value="2909 30 90">2909 30 90</option>
+							
+							<option value="2913 00 90">2913 00 90</option>
+							
+							<option value="3815 12 10">3815 12 10</option>
+							
+							<option value="3402 13 00">3402 13 00</option>
+							
+							<option value="2921 29 90">2921 29 90</option>
+							
+							<option value="1302 39 00">1302 39 00</option>
+							
+							<option value="2825 50 00">2825 50 00</option>
+							
+							<option value="2833 30 90">2833 30 90</option>
+							
+							<option value="3906 10 90">3906 10 90</option>
+							
+							<option value="2921 43 90">2921 43 90</option>
+							
+							<option value="2830 10 00">2830 10 00</option>
+							
+							<option value="2908 90 10">2908 90 10</option>
+							
+							<option value="2917 39 90">2917 39 90</option>
+							
+							<option value="2825 70 10">2825 70 10</option>
+							
+							<option value="2712 10 90">2712 10 90</option>
+							
+							<option value="2811 19 90">2811 19 90</option>
+							
+							<option value="2918 23 90">2918 23 90</option>
+							
+							<option value="2921 59 90">2921 59 90</option>
+							
+							<option value="2921 11 90">2921 11 90</option>
+							
+							<option value="2818 20 90">2818 20 90</option>
+							
+							<option value="2827 49 00">2827 49 00</option>
+							
+							<option value="2825 80 00">2825 80 00</option>
+							
+							<option value="1108 12 00">1108 12 00</option>
+							
+							<option value="3906 90 90">3906 90 90</option>
+							
+							<option value="2920 90 10">2920 90 10</option>
+							
+							<option value="2304 00 30">2304 00 30</option>
+							
+							<option value="2915 90 90">2915 90 90</option>
+							
+							<option value="8112 21 00">8112 21 00</option>
+							
+							<option value="7406 10 00">7406 10 00</option>
+							
+							<option value="2915 13 00">2915 13 00</option>
+							
+							<option value="2915 50 00">2915 50 00</option>
+							
+							<option value="7002 10 00">7002 10 00</option>
+							
+							<option value="2512 00 90">2512 00 90</option>
+							
+							<option value="2907 23 00">2907 23 00</option>
+							
+							<option value="3804 00 90">3804 00 90</option>
+							
+							<option value="2904 90 90">2904 90 90</option>
+							
+							<option value="2508 40 90">2508 40 90</option>
+							
+							<option value="2912 50 00">2912 50 00</option>
+							
+							<option value="2925 19 00">2925 19 00</option>
+							
+							<option value="2811 29 10">2811 29 10</option>
+							
+							<option value="2813 90 90">2813 90 90</option>
+							
+							<option value="2905 19 90">2905 19 90</option>
+							
+							<option value="2826 90 00">2826 90 00</option>
+							
+							<option value="2912 29 90">2912 29 90</option>
+							
+							<option value="2833 29 30">2833 29 30</option>
+							
+							<option value="2902 43 00">2902 43 00</option>
+							
+							<option value="2836 30 00">2836 30 00</option>
+							
+							<option value="2836 20 90">2836 20 90</option>
+							
+							<option value="2929 90 90">2929 90 90</option>
+							
+							<option value="2827 20 00">2827 20 00</option>
+							
+							<option value="7403 19 00">7403 19 00</option>
+							
+							<option value="2928 00 90">2928 00 90</option>
+							
+							<option value="2812 90 00">2812 90 00</option>
+							
+							<option value="2915 60 10">2915 60 10</option>
+							
+							<option value="2512 00 10">2512 00 10</option>
+							
+							<option value="2916 13 10">2916 13 10</option>
+							
+							<option value="2905 16 90">2905 16 90</option>
+							
+							<option value="2909 50 90">2909 50 90</option>
+							
+							<option value="1702 90 10">1702 90 10</option>
+							
+							<option value="8111 00 10">8111 00 10</option>
+							
+							<option value="2505 10 19">2505 10 19</option>
+							
+							<option value="8007 00 90">8007 00 90</option>
+							
+							<option value="2823 00 10">2823 00 10</option>
+							
+							<option value="3204 13 91">3204 13 91</option>
+							
+							<option value="2916 11 00">2916 11 00</option>
+							
+							<option value="2905 29 00">2905 29 00</option>
+							
+							<option value="8110 10 00">8110 10 00</option>
+							
+							<option value="2916 32 00">2916 32 00</option>
+							
+							<option value="3301 30 99">3301 30 99</option>
+							
+							<option value="2907 12 10">2907 12 10</option>
+							
+							<option value="2520 20 90">2520 20 90</option>
+							
+							<option value="3912 31 00">3912 31 00</option>
+							
+							<option value="8105 20 20">8105 20 20</option>
+							
+							<option value="2922 29 90">2922 29 90</option>
+							
+							<option value="2906 13 10">2906 13 10</option>
+							
+							<option value="3301 29 11">3301 29 11</option>
+							
+							<option value="2932 20 90">2932 20 90</option>
+							
+							<option value="2834 29 30">2834 29 30</option>
+							
+							<option value="2824 90 00">2824 90 00</option>
+							
+							<option value="8102 10 00">8102 10 00</option>
+							
+							<option value="2933 61 00">2933 61 00</option>
+							
+							<option value="2902 90 90">2902 90 90</option>
+							
+							<option value="2912 60 00">2912 60 00</option>
+							
+							<option value="3911 90 90">3911 90 90</option>
+							
+							<option value="7110 41 00">7110 41 00</option>
+							
+							<option value="2920 90 99">2920 90 99</option>
+							
+							<option value="2849 90 20">2849 90 20</option>
+							
+							<option value="8108 20 00">8108 20 00</option>
+							
+							<option value="2827 10 00">2827 10 00</option>
+							
+							<option value="3104 20 00">3104 20 00</option>
+							
+							<option value="1302 20 00">1302 20 00</option>
+							
+							<option value="3102 10 00">3102 10 00</option>
+							
+							<option value="2841 61 00">2841 61 00</option>
+							
+							<option value="3910 00 20">3910 00 20</option>
+							
+							<option value="2843 21 00">2843 21 00</option>
+							
+							<option value="2933 71 00">2933 71 00</option>
+							
+							<option value="3201 90 90">3201 90 90</option>
+							
+							<option value="2905 14 90">2905 14 90</option>
+							
+							<option value="8104 30 20">8104 30 20</option>
+							
+							<option value="2921 51 90">2921 51 90</option>
+							
+							<option value="7102 29 90">7102 29 90</option>
+							
+							<option value="2930 20 00">2930 20 00</option>
+							
+							<option value="2804 50 20">2804 50 20</option>
+							
+							<option value="2920 90 41">2920 90 41</option>
+							
+							<option value="2905 59 00">2905 59 00</option>
+							
+							<option value="2918 16 90">2918 16 90</option>
+							
+							<option value="2917 34 00">2917 34 00</option>
+							
+							<option value="2832 10 90">2832 10 90</option>
+							
+							<option value="2815 11 90">2815 11 90</option>
+							
+							<option value="7110 19 00">7110 19 00</option>
+							
+							<option value="3905 99 90">3905 99 90</option>
+							
+							<option value="2933 54 00">2933 54 00</option>
+							
+							<option value="2915 32 00">2915 32 00</option>
+							
+							<option value="3203 00 90">3203 00 90</option>
+							
+							<option value="2915 40 30">2915 40 30</option>
+							
+							<option value="3402 20 90">3402 20 90</option>
+							
+							<option value="2921 44 10">2921 44 10</option>
+							
+							<option value="3806 10 90">3806 10 90</option>
+							
+							<option value="7506 10 00">7506 10 00</option>
+							
+							<option value="2849 90 90">2849 90 90</option>
+							
+							<option value="2850 00 20">2850 00 20</option>
+							
+							<option value="2818 30 00">2818 30 00</option>
+							
+							<option value="2905 17 00">2905 17 00</option>
+							
+							<option value="2903 39 90">2903 39 90</option>
+							
+							<option value="7804 20 00">7804 20 00</option>
+							
+							<option value="2921 45 90">2921 45 90</option>
+							
+							<option value="2912 41 00">2912 41 00</option>
+							
+							<option value="3905 30 00">3905 30 00</option>
+							
+							<option value="2833 25 00">2833 25 00</option>
+							
+							<option value="2825 30 90">2825 30 90</option>
+							
+							<option value="2835 29 90">2835 29 90</option>
+							
+							<option value="2825 60 10">2825 60 10</option>
+							
+							<option value="3204 13 49">3204 13 49</option>
+							
+							<option value="1515 30 90">1515 30 90</option>
+							
+							<option value="3301 29 41">3301 29 41</option>
+							
+							<option value="1509 90 90">1509 90 90</option>
+							
+							<option value="3301 24 00">3301 24 00</option>
+							
+							<option value="2923 20 10">2923 20 10</option>
+							
+							<option value="3507 90 62">3507 90 62</option>
+							
+							<option value="2833 24 00">2833 24 00</option>
+							
+							<option value="2915 60 20">2915 60 20</option>
+							
+							<option value="3913 10 10">3913 10 10</option>
+							
+							<option value="1521 10 90">1521 10 90</option>
+							
+							<option value="2825 90 20">2825 90 20</option>
+							
+							<option value="2939 30 00">2939 30 00</option>
+							
+							<option value="2835 10 90">2835 10 90</option>
+							
+							<option value="2907 29 90">2907 29 90</option>
+							
+							<option value="2909 60 00">2909 60 00</option>
+							
+							<option value="2942 00 90">2942 00 90</option>
+							
+							<option value="7410 11 00">7410 11 00</option>
+							
+							<option value="2903 91 20">2903 91 20</option>
+							
+							<option value="2827 60 20">2827 60 20</option>
+							
+							<option value="2512 00 00">2512 00 00</option>
+							
+							<option value="7205 29 90">7205 29 90</option>
+							
+							<option value="2816 10 10">2816 10 10</option>
+							
+							<option value="2915 70 50">2915 70 50</option>
+							
+							<option value="2820 10 00">2820 10 00</option>
+							
+							<option value="2934 20 00">2934 20 00</option>
+							
+							<option value="7504 00 00">7504 00 00</option>
+							
+							<option value="2809 20 20">2809 20 20</option>
+							
+							<option value="7603 10 10">7603 10 10</option>
+							
+							<option value="2907 22 00">2907 22 00</option>
+							
+							<option value="2925 11 00">2925 11 00</option>
+							
+							<option value="1301 20 00">1301 20 00</option>
+							
+							<option value="2804 90 00">2804 90 00</option>
+							
+							<option value="2849 20 90">2849 20 90</option>
+							
+							<option value="7106 92 90">7106 92 90</option>
+							
+							<option value="2918 15 40">2918 15 40</option>
+							
+							<option value="2833 19 90">2833 19 90</option>
+							
+							<option value="2836 92 00">2836 92 00</option>
+							
+							<option value="2907 19 90">2907 19 90</option>
+							
+							<option value="3204 13 52">3204 13 52</option>
+							
+							<option value="2526 20 00">2526 20 00</option>
+							
+							<option value="2508 10 90">2508 10 90</option>
+							
+							<option value="2912 21 00">2912 21 00</option>
+							
+							<option value="2839 90 90">2839 90 90</option>
+							
+							<option value="1108 19 90">1108 19 90</option>
+							
+							<option value="2918 30 40">2918 30 40</option>
+							
+							<option value="2916 14 00">2916 14 00</option>
+							
+							<option value="2905 14 10">2905 14 10</option>
+							
+							<option value="2914 19 90">2914 19 90</option>
+							
+							<option value="7502 10 00">7502 10 00</option>
+							
+							<option value="3907 60 90">3907 60 90</option>
+							
+							<option value="3903 19 90">3903 19 90</option>
+							
+							<option value="3815 11 00">3815 11 00</option>
+							
+							<option value="7901 20 90">7901 20 90</option>
+							
+							<option value="1106 30 10">1106 30 10</option>
+							
+							<option value="1106 30 90">1106 30 90</option>
+							
+							<option value="2902 60 00">2902 60 00</option>
+							
+							<option value="3204 13 10">3204 13 10</option>
+							
+							<option value="2921 44 90">2921 44 90</option>
+							
+							<option value="3301 29 16">3301 29 16</option>
+							
+							<option value="8543 70 99">8543 70 99</option>
+							
+							<option value="3917">3917</option>
+							
+							<option value="5305 00 40">5305 00 40</option>
+							
+							<option value="6909 90 00">6909 90 00</option>
+							
+							<option value="9023 00 90">9023 00 90</option>
+							
+							<option value="3923 10 90">3923 10 90</option>
+							
+							<option value="3916">3916</option>
+							
+							<option value="9405 40 90">9405 40 90</option>
+							
+							<option value="3105 90 90">3105 90 90</option>
+							
+							<option value="2921 21 00">2921 21 00</option>
+							
+							<option value="3926">3926</option>
+							
+							<option value="8413">8413</option>
+							
+							<option value="3809 93 90">3809 93 90</option>
+							
+							<option value="3920">3920</option>
+							
+							<option value="8419 20 90">8419 20 90</option>
+							
+							<option value="7326 90 99">7326 90 99</option>
+							
+							<option value="3307 90 90">3307 90 90</option>
+							
+							<option value="3921 90 99">3921 90 99</option>
+							
+							<option value="8419 19 20">8419 19 20</option>
+							
+							<option value="8506 80 90">8506 80 90</option>
+							
+							<option value="8462 49 10">8462 49 10</option>
+							
+							<option value="9027 50 90">9027 50 90</option>
+							
+							<option value="3005 90 90">3005 90 90</option>
+							
+							<option value="5601 21 10">5601 21 10</option>
+							
+							<option value="3920 73 29">3920 73 29</option>
+							
+							<option value="4821 90 90">4821 90 90</option>
+							
+							<option value="4808 90 00">4808 90 00</option>
+							
+							<option value="9027 80 90">9027 80 90</option>
+							
+							<option value="8419 89 90">8419 89 90</option>
+							
+							<option value="8414 10 00">8414 10 00</option>
+							
+							<option value="8479 90 90">8479 90 90</option>
+							
+							<option value="9027 90 90">9027 90 90</option>
+							
+							<option value="8421 99 00">8421 99 00</option>
+							
+							<option value="9004 90 90">9004 90 90</option>
+							
+							<option value="3506 99 99">3506 99 99</option>
+							
+							<option value="8410 89 10">8410 89 10</option>
+							
+							<option value="3919 90 90">3919 90 90</option>
+							
+							<option value="3917 39 90">3917 39 90</option>
+							
+							<option value="8479 89 99">8479 89 99</option>
+							
+							<option value="00">00</option>
+							
+							<option value="8304 00 00">8304 00 00</option>
+							
+							<option value="9018 90 23">9018 90 23</option>
+							
+							<option value="8205 59 90">8205 59 90</option>
+							
+							<option value="8419 11 90">8419 11 90</option>
+							
+							<option value="9018 90 99">9018 90 99</option>
+							
+							<option value="3923 50 90">3923 50 90</option>
+							
+							<option value="9026 10 10">9026 10 10</option>
+							
+							<option value="4015 19 00">4015 19 00</option>
+							
+							<option value="4823 90 90">4823 90 90</option>
+							
+							<option value="3926 20 29">3926 20 29</option>
+							
+							<option value="9016">9016</option>
+							
+							<option value="3824 79 00">3824 79 00</option>
+							
+							<option value="3914 00 90">3914 00 90</option>
+							
+							<option value="2938 90 90">2938 90 90</option>
+							
+							<option value="2207 10 19">2207 10 19</option>
+							
+							<option value="3822 00 00">3822 00 00</option>
+							
+							<option value="3920 79 99">3920 79 99</option>
+							
+							<option value="4901 10 20">4901 10 20</option>
+							
+							<option value="2936 29 20">2936 29 20</option>
+							
+							<option value="3507 10 19">3507 10 19</option>
+							
+							<option value="2008 20 00">2008 20 00</option>
+							
+							<option value="2009 89 90">2009 89 90</option>
+							
+							<option value="2918 30 00">2918 30 00</option>
+							
+							<option value="2934 10 00">2934 10 00</option>
+							
+							<option value="2931 39 00">2931 39 00</option>
+							
+							<option value="2918 91 00">2918 91 00</option>
+							
+							<option value="2937 90 90">2937 90 90</option>
+							
+							<option value="2933 39 00">2933 39 00</option>
+							
+							<option value="3004 90 99">3004 90 99</option>
+							
+							<option value="8112 92 00">8112 92 00</option>
+							
+							<option value="2935 90 90">2935 90 90</option>
+							
+							<option value="2921 49 90">2921 49 90</option>
+							
+							<option value="3104 90 00">3104 90 00</option>
+							
+							<option value="8424 89 90">8424 89 90</option>
+							
+							<option value="8424 90 00">8424 90 00</option>
+							
+							<option value="9018 39 90">9018 39 90</option>
+							
+							<option value="3923 29 90">3923 29 90</option>
+							
+							<option value="3923 21 00">3923 21 00</option>
+							
+							<option value="3923 30 10">3923 30 10</option>
+							
+							<option value="8505 11 90">8505 11 90</option>
+							
+							<option value="3824 99 90">3824 99 90</option>
+							
+							<option value="8421 29 00">8421 29 00</option>
+							
+							<option value="1901 90 10">1901 90 10</option>
+							
+							<option value="3001 20 20">3001 20 20</option>
+							
+							<option value="2905 49 00">2905 49 00</option>
+							
+							<option value="1518 00 29">1518 00 29</option>
+							
+							<option value="2903 89 00">2903 89 00</option>
+							
+							<option value="1702 40 20">1702 40 20</option>
+							
+							<option value="3903 90 90">3903 90 90</option>
+							
+							<option value="3002 10 99">3002 10 99</option>
+							
+							<option value="2804 50 10">2804 50 10</option>
+							
+							<option value="2916 12 90">2916 12 90</option>
+							
+							<option value="2905 22 10">2905 22 10</option>
+							
+							<option value="2916 20 00">2916 20 00</option>
+							
+							<option value="3815 19 00">3815 19 00</option>
+							
+							<option value="2910 30 00">2910 30 00</option>
+							
+							<option value="2910 90 00">2910 90 00</option>
+							
+							<option value="2937 29 00">2937 29 00</option>
+							
+							<option value="2905 39 90">2905 39 90</option>
+							
+							<option value="2914 61 00">2914 61 00</option>
+							
+							<option value="2920 90 85">2920 90 85</option>
+							
+							<option value="2909 19 00">2909 19 00</option>
+							
+							<option value="2905 22 90">2905 22 90</option>
+							
+							<option value="2932 19 90">2932 19 90</option>
+							
+							<option value="2939 49 00">2939 49 00</option>
+							
+							<option value="2815 12 00">2815 12 00</option>
+							
+							<option value="1515 19 90">1515 19 90</option>
+							
+							<option value="2924 23 00">2924 23 00</option>
+							
+							<option value="2819 90 00">2819 90 00</option>
+							
+							<option value="2707 99 00">2707 99 00</option>
+							
+							<option value="2916 19 10">2916 19 10</option>
+							
+							<option value="3002 12 90">3002 12 90</option>
+							
+							<option value="3501 90 00">3501 90 00</option>
+							
+							<option value="2802 00 10">2802 00 10</option>
+							
+							<option value="2915 70 40">2915 70 40</option>
+							
+							<option value="3913 10 90">3913 10 90</option>
+							
+							<option value="2805 12 00">2805 12 00</option>
+							
+							<option value="2908 99 10">2908 99 10</option>
+							
+							<option value="3808 50 00">3808 50 00</option>
+							
+							<option value="2903 92 29">2903 92 29</option>
+							
+							<option value="2917 13 00">2917 13 00</option>
+							
+							<option value="2912 42 00">2912 42 00</option>
+							
+							<option value="2912 49 99">2912 49 99</option>
+							
+							<option value="3002 10 91">3002 10 91</option>
+							
+							<option value="2849 90 10">2849 90 10</option>
+							
+							<option value="2937 23 00">2937 23 00</option>
+							
+							<option value="2916 19 40">2916 19 40</option>
+							
+							<option value="2914 29 90">2914 29 90</option>
+							
+							<option value="2921 22 00">2921 22 00</option>
+							
+							<option value="2933 19 90">2933 19 90</option>
+							
+							<option value="3204 90 00">3204 90 00</option>
+							
+							<option value="1302 19 15">1302 19 15</option>
+							
+							<option value="2938 90 10">2938 90 10</option>
+							
+							<option value="2922 21 90">2922 21 90</option>
+							
+							<option value="2921 43 70">2921 43 70</option>
+							
+							<option value="2939 20 10">2939 20 10</option>
+							
+							<option value="2907 19 10">2907 19 10</option>
+							
+							<option value="1404 90 90">1404 90 90</option>
+							
+							<option value="3002 10 20">3002 10 20</option>
+							
+							<option value="2506 10 20">2506 10 20</option>
+							
+							<option value="2805 30 00">2805 30 00</option>
+							
+							<option value="2924 21 90">2924 21 90</option>
+							
+							<option value="2903 81 00">2903 81 00</option>
+							
+							<option value="2903 79 00">2903 79 00</option>
+							
+							<option value="2905 16 00">2905 16 00</option>
+							
+							<option value="2921 30 90">2921 30 90</option>
+							
+							<option value="2911 00 90">2911 00 90</option>
+							
+							<option value="2905 41 00">2905 41 00</option>
+							
+							<option value="2907 13 00">2907 13 00</option>
+							
+							<option value="3402 11 90">3402 11 90</option>
+							
+							<option value="3204 13 00">3204 13 00</option>
+							
+							<option value="2804 80 00">2804 80 00</option>
+							
+							<option value="3204 19 55">3204 19 55</option>
+							
+							<option value="8106 00 10">8106 00 10</option>
+							
+							<option value="2909 30 19">2909 30 19</option>
+							
+							<option value="3801 10 00">3801 10 00</option>
+							
+							<option value="8112 99 00">8112 99 00</option>
+							
+							<option value="2914 69 10">2914 69 10</option>
+							
+							<option value="2934 30 00">2934 30 00</option>
+							
+							<option value="2932 13 00">2932 13 00</option>
+							
+							<option value="8101 10 00">8101 10 00</option>
+							
+							<option value="2906 19 90">2906 19 90</option>
+							
+							<option value="2937 22 00">2937 22 00</option>
+							
+							<option value="2843 30 00">2843 30 00</option>
+							
+							<option value="3204 19 79">3204 19 79</option>
+							
+							<option value="8107 90 00">8107 90 00</option>
+							
+							<option value="2926 20 00">2926 20 00</option>
+							
+							<option value="1302 32 10">1302 32 10</option>
+							
+							<option value="2939 59 00">2939 59 00</option>
+							
+							<option value="3001 90 91">3001 90 91</option>
+							
+							<option value="2903 31 00">2903 31 00</option>
+							
+							<option value="2932 12 00">2932 12 00</option>
+							
+							<option value="3301 12 00">3301 12 00</option>
+							
+							<option value="2903 19 90">2903 19 90</option>
+							
+							<option value="2915 70 10">2915 70 10</option>
+							
+							<option value="2932 11 00">2932 11 00</option>
+							
+							<option value="2810 00 10">2810 00 10</option>
+							
+							<option value="2915 90 30">2915 90 30</option>
+							
+							<option value="8107 20 00">8107 20 00</option>
+							
+							<option value="2918 22 00">2918 22 00</option>
+							
+							<option value="2931 20 00">2931 20 00</option>
+							
+							<option value="3301 29 90">3301 29 90</option>
+							
+							<option value="2905 39 10">2905 39 10</option>
+							
+							<option value="2922 12 90">2922 12 90</option>
+							
+							<option value="2922 13 90">2922 13 90</option>
+							
+							<option value="3912 39 29">3912 39 29</option>
+							
+							<option value="2937 12 00">2937 12 00</option>
+							
+							<option value="2929 10 10">2929 10 10</option>
+							
+							<option value="2910 20 00">2910 20 00</option>
+							
+							<option value="2809 10 00">2809 10 00</option>
+							
+							<option value="2901 24 00">2901 24 00</option>
+							
+							<option value="2914 22 00">2914 22 00</option>
+							
+							<option value="2921 30 10">2921 30 10</option>
+							
+							<option value="2920 90 30">2920 90 30</option>
+							
+							<option value="3002 90 99">3002 90 99</option>
+							
+							<option value="8421 39 90">8421 39 90</option>
+							
+							<option value="8421 19 99">8421 19 99</option>
+							
+							<option value="8421 21 90">8421 21 90</option>
+							
+							<option value="8414 90 90">8414 90 90</option>
+							
+							<option value="3907 10 00">3907 10 00</option>
+							
+							<option value="1702 50 00">1702 50 00</option>
+							
+							<option value="3822 00 19">3822 00 19</option>
+							
+							<option value="2937 21 00">2937 21 00</option>
+							
+							<option value="3507 90 69">3507 90 69</option>
+							
+							<option value="2919 90 40">2919 90 40</option>
+							
+							<option value="3204 13 41">3204 13 41</option>
+							
+							<option value="2922 42 20">2922 42 20</option>
+							
+							<option value="2850 00 30">2850 00 30</option>
+							
+							<option value="2904 99 90">2904 99 90</option>
+							
+							<option value="3917 21 90">3917 21 90</option>
+							
+							<option value="8479 00 00">8479 00 00</option>
+							
+							<option value="8514 00 00">8514 00 00</option>
+							
+							<option value="8421 00 00">8421 00 00</option>
+							
+							<option value="8419 00 00">8419 00 00</option>
+							
+							<option value="8418 00 00">8418 00 00</option>
+							
+							<option value="8504 00 00">8504 00 00</option>
+							
+							<option value="9107 00 00">9107 00 00</option>
+							
+							<option value="8418 00 00 ">8418 00 00 </option>
+							
+							<option value="9025 00 00">9025 00 00</option>
+							
+							<option value="9987 00 00">9987 00 00</option>
+							
+						</datalist>
+					</td>
+
+					<td><label for="section">Section:</label>
+						<div class="input-group">
+							<input type="text" id="section" class="form-control" list="sectionlist" name="section" placeholder="Enter section name...">
+						</div>
+						<datalist id="sectionlist">
+							
+							<option value="MICROBIOLOGY">MICROBIOLOGY</option>
+							
+							<option value="CELL CULTURE">CELL CULTURE</option>
+							
+							<option value="LABORATORY AIDS">LABORATORY AIDS</option>
+							
+							<option value="CHEMICALS">CHEMICALS</option>
+							
+							<option value="MOLECULAR BIOLOGY">MOLECULAR BIOLOGY</option>
+							
+							<option value="RPM &amp; PLATE">RPM &amp; PLATE</option>
+							
+							<option value="PLANT TISSUE CULTURE">PLANT TISSUE CULTURE</option>
+							
+						</datalist>
+					</td>
+				</tr>
+			</tbody></table>
+			<br>
+			<button id="createbtn" class="btn btn-primary">Create</button>
+			<span id="create-errormsg" class="errormsg">*Please fill atleast one of the inputs.</span> 
+			<img id="load-create" class="load-icon" src="images/load.gif">
+		</div>
+	</div>
+	
+	
+
+</body></html>
