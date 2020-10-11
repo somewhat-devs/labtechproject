@@ -106,8 +106,7 @@ $(document).ready(function() {
 			($('#brand').val() == "") &&
 			($('#productname').val() == "") &&
 			($('#hscode').val() == "") &&
-			($('#section').val() == "") &&
-			($('#custrate').val() == "none")) {
+			($('#section').val() == "")) {
 			$('#submit-errormsg').show();
 			return 1;
 		} else {
@@ -135,13 +134,13 @@ $(document).ready(function() {
 			url: 'SearchService', 
 			type: 'POST',	
 			dataType: 'json',
+			timeout: 15000,
 			data: {
 				materialno: $('#materialno').val(), 	
 				brand: $('#brand').val(),
 				productname: $('#productname').val(),
 				hscode: $('#hscode').val(),
 				section: $('#section').val(),
-				custrate: $('#custrate').val(),
 				action: 'searchProduct'
 			},
 			success: function(responseText) { 			
@@ -178,7 +177,11 @@ $(document).ready(function() {
 			},
 			fail: function(){
 				$(loadbtn).hide();
-				alert("Some error occured!");
+				alert("Something went wrong!");
+			},
+			error: function(){
+				$(loadbtn).hide();
+				alert("Something went wrong!");
 			}
 		});
 	});
@@ -195,13 +198,12 @@ $(document).ready(function() {
 				return 1;
 			}
 		}
+		
 		var pn = $(this).parent().parent().find('td:nth-child(5)');
 //		create table row with product id as rows id
 		var item_tr = "<tr id='billProd-" + mnid + "'>"+
 //		S no
 		"<td class=\"td-center\">"+ n + "</td>" +			
-//		hsncode editable field
-		"<td><input type=\"text\" class=\"form-control form-control-sm\" value=\""+ pn.next().next().next().text() +"\"></td>" +
 //		Item Name with Description
 		"<td>"+ pn.text() + "</td>" +			
 // 		Make/Brand
@@ -216,23 +218,66 @@ $(document).ready(function() {
 				"<button class=\"btn btn-sm btn-outline-secondary\" id=\"qty-incbtn\">+</button> </div>" +
 		"</div></td>" +																		
 //		price/rate editable field
-		"<td><input type=\"number\" class=\"form-control form-control-sm bill-inputs qtyNprc\" value=\""+ ( ($.isNumeric(pn.next().text())) ? pn.next().text() : 0 ) +"\"></td>" +										// Price/Rate
-//		discount 
-		"<td><div class=\"billinput-divs\">" +
-		"<input type=\"number\" id=\"bil-input-disc\" class=\"form-control form-control-sm bill-inputs percent\" value=\"0\" min=\"0\" max=\"100\">"+ 
-		"<label class=\"billinput-labels\" for=\"bill-input-disc\">%</label>" +
-		"</div></td>" +						
+		"<td><input type=\"number\" class=\"form-control form-control-sm bill-inputs qtyNprc\" value=\""+ 
+		( ($.isNumeric(pn.next().text())) ? pn.next().text() : 0 ) +"\"></td>" ;										// Price/Rate
+//		discount editable field
+		if ($('#discount-enbl').prop('checked')) {
+			item_tr += "<td><div class=\"billinput-divs\">" +
+			"<input type=\"number\" class=\"form-control form-control-sm bill-inputs percent\" value=\"0\" min=\"0\" max=\"100\">"+ 
+			"<label class=\"billinput-labels\" for=\"bill-input-disc\">%</label>" +
+			"</div></td>" ;	
+		} else {
+			item_tr += "<td style=\"background-color: rgb(233, 236, 239);\"><div class=\"billinput-divs\">" +
+			"<input type=\"number\" class=\"form-control form-control-sm bill-inputs percent\" value=\"0\" min=\"0\" max=\"100\" disabled=\"\">"+ 
+			"<label class=\"billinput-labels\" for=\"bill-input-disc\">%</label>" +
+			"</div></td>" ;
+		}
 //		gst rate editable field
-		"<td><div class=\"billinput-divs\">" +
-		"<input type=\"number\" id=\"bil-input-gst\" class=\"form-control form-control-sm bill-inputs percent\" value=\""+ ( ($.isNumeric(pn.next().next().text())) ? pn.next().next().text() : 0 ) +"\" min=\"0\" max=\"100\">" + 
+		item_tr += "<td><div class=\"billinput-divs\">" +
+		"<input type=\"number\" class=\"form-control form-control-sm bill-inputs percent\" value=\""+ 
+		( ($.isNumeric(pn.next().next().text())) ? pn.next().next().text() : 0 ) +"\" min=\"0\" max=\"100\">" + 
 		"<label class=\"billinput-labels\" for=\"bill-input-gst\">%</label>" +
-		"</div></td>" +					
+		"</div></td>" +		
+//		Total price incl. discount and gst for each price
+		"<td class=\"td-center\">0.0</td>" +	
+//		hsncode editable field
+		"<td><input type=\"text\" class=\"form-control form-control-sm\" value=\""+ pn.next().next().next().text() +"\"></td>" +
 //		remove button for each product to delete it from bill table
 		"<td class=\"td-center\"> <button class=\"btn btn-outline-danger btn-sm rem-btn\">remove</button> </td></tr>"	;													// remove button   - niharika
 		
 		$('#billtbl-empty').hide();
 		$('#bill-tbl tbody').append(item_tr);
+		$('#billtotal').text((parseFloat($('#billtotal').text()) + addprodtotal(mnid)).toFixed(2));
 	});
+	
+//	function to calculate total of 1 product which is to be added.
+	function addprodtotal(id){
+		var tr = $('#billProd-' +id+ ' td');
+		var prc = $(tr[4]).find('input').val();
+		var qty = $(tr[3]).find('input').val();
+		var p1,p2,p3;
+		if (($('#discount-enbl').prop('checked'))) {
+			p1 = prc * qty;
+			p2 = p1  - (p1  * ($(tr[5]).find('input').val()/100));
+			p3 = p2  + (p2  * ($(tr[6]).find('input').val()/100));
+		} else {
+			p1 = prc * qty;
+			p3 = p1  + (p1  * ($(tr[6]).find('input').val()/100));
+		}
+		$(tr[7]).text((p3).toFixed(2));
+		return p3;
+	}
+	
+//	function to update total of all products of the quotation
+	function updtprodtotal(){
+		var billtotal = 0;
+		$('#bill-tbl tbody tr').not(':first').each(function(i,e){
+			var id = $(e).attr("id");
+			id = id.substring(id.indexOf('-')+1);
+			billtotal += addprodtotal(id);
+		}); 
+		$('#billtotal').text((billtotal).toFixed(2));
+	}
 
 //	implementation for remove button of each product in bill table
 	$(document).on("click", '.rem-btn', function() { 
@@ -244,8 +289,12 @@ $(document).ready(function() {
 		if ($('#bill-tbl tbody').children().length == 2){
 			$(this).parent().parent().remove();
 			$('#billtbl-empty').show();
-		} else
+			$('#billtotal').text("0.0");
+		} else{
 			$(this).parent().parent().remove();
+			updtprodtotal();
+		}
+		
 	});
 	
 //	implementation for increament and decreament buttons for quantity field of each product in bill table
@@ -264,14 +313,43 @@ $(document).ready(function() {
 //	quantity and price field validation, must be numeric
 	$(document).on("change", '.bill-inputs.qtyNprc', function() {
 		if ( !$.isNumeric($(this).val()) && !$(this).hasClass('invalid'))	$(this).addClass('invalid');
-		else															 	$(this).removeClass('invalid');
+		else {
+			$(this).removeClass('invalid');
+			updtprodtotal();
+		}
 	});
 
 //	discount and gst field validation, must be numeric and in the range between 0 to 100
 	$(document).on("change", '.bill-inputs.percent', function() {
 		if ( (0 > $(this).val() || $(this).val() > 100 || $(this).val() == "") && !$(this).hasClass('invalid'))	
 			$(this).addClass('invalid');
-		else															 					
+		else {															 					
+			$(this).removeClass('invalid');
+			updtprodtotal();
+		}
+	});
+	
+//	discount column enable/disable change events
+	$('#discount-enbl').on('change', function(){
+		if (!($(this).prop('checked'))) {
+			$('#bill-tbl tbody td:nth-child(6)').each(function(i,e){
+			    $(e).css('background-color',"#e9ecef");
+			    $(e).find('input').prop('disabled', "true");
+			});
+		} else {
+			$('#bill-tbl tbody td:nth-child(6)').each(function(i,e){
+			    $(e).css('background-color',"#fff");
+			    $(e).find('input').removeAttr("disabled");
+			});
+		}
+		updtprodtotal();
+	});
+	
+//	implementing validation for quotationno, customername, subject, termsNcondition 
+	$('#quotationno, #customername, #subject, #termsNcondition').on('change', function() {
+		if ($(this).val() == "")
+			$(this).addClass('invalid');
+		else
 			$(this).removeClass('invalid');
 	});
 	
@@ -279,16 +357,20 @@ $(document).ready(function() {
 	$('.exportbtn').click(function(){
 //		validation of all textfields present in bill table for each product
 		var invalidFlag = 0;
-		if ($('#termsNcondition').val() == ""){
-			$('#termsNcondition').addClass('invalid');
-			invalidFlag = 1;
-		} else if ($('#termsNcondition').hasClass('invalid')) 
-			$('#termsNcondition').removeClass('invalid');
+		$(['#quotationno', '#customername', '#subject', '#termsNcondition']).each(function(i,e){
+			if ($(e).val() == ""){
+				$(e).addClass('invalid');
+				invalidFlag = 1;
+			} else if ($(e).hasClass('invalid')) 
+				$(e).removeClass('invalid');
+		});
 		
 		$('.bill-inputs').each(function(i, e) {
 			if ($(e).hasClass('invalid')) 
 				invalidFlag = 1;
 		});
+		if ($('#bill-tbl tbody').children().length <=1 )
+			invalidFlag = 1;
 		
 		if (invalidFlag==1) {
 			$('#exportbtn-errormsg').css("display", "block");
@@ -297,31 +379,51 @@ $(document).ready(function() {
 			$('#exportbtn-errormsg').hide();
 		}
 
+		updtprodtotal();
 //		generating json to send to export service
-		var termsNcondition = $('#termsNcondition').val();
-		var billProdList = [];
+		var billProdList = [], otherfields = [];
+		$(['#quotationno', '#customername', '#subject', '#termsNcondition']).each(function(i,e){
+			otherfields.push($(e).val());
+		});
+		
+		if ($('#discount-enbl').prop('checked'))
+			otherfields.push("1");
+		else
+			otherfields.push("0");
+		
+		otherfields.push($('#billtotal').text());
+		
 		$('#bill-tbl tbody tr').not(':first').each(function(i,e){ 
 		    var temp = [];
 		    $(e).children().each(function(i,e){
-		        if (i==0 || i==2 || i==3) 			temp.push($(e).html());
-		        if (i==1 || i==4 || i==5 || i==6 || i==7)	temp.push($(e).find('input').val());
-// 		        if (i==6 || i==7) 					temp.push($(e).find('input').val());
+		        if (i==0 || i==1 || i==2 || i==7) 					
+		        	temp.push($(e).html());
+		        if (i==3 || i==4 || i==6 || i==8)			
+		        	temp.push($(e).find('input').val());
+		        if (i==5)
+		        	if ($('#discount-enbl').prop('checked'))
+		        		temp.push($(e).find('input').val());
+		        	else
+		        		temp.push("NULL");
 		    });
 		    billProdList.push(temp);
 		});
 		var exportbtnid = $(this).attr("id");
 		if (exportbtnid == "exportbtn-pdf") {
-			var dataType = 'application/pdf';	var action = 'exportToPDF';  var loadbtn = '#load-export-pdf';
+			var action = 'exportToPDF';  var loadbtn = '#load-export-pdf';
+		} else if (exportbtnid == "exportbtn-doc") {
+			var action = 'exportToWord';  var loadbtn = '#load-export-doc';
 		} else {
-			var dataType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';	var action = 'exportToExcel';  var loadbtn = '#load-export-xlsx';
+			var action = 'exportToExcel';  var loadbtn = '#load-export-xls';
 		}
 		$(loadbtn).show();
 		$.ajax({
 			url: 'ExportService',
-			type: 'POST',	
+			type: 'POST',
+			timeout: 15000,
 			data: {
 				prodlist: JSON.stringify(billProdList),
-				termsNcondition: termsNcondition,
+				otherfields: JSON.stringify(otherfields),
 				action: action
 			},
 			success: function(data) {
@@ -330,7 +432,11 @@ $(document).ready(function() {
 			},
 			fail: function(){
 				$(loadbtn).hide();
-				alert("Some error occured!");
+				alert("Something went wrong!");
+			},
+			error: function(){
+				$(loadbtn).hide();
+				alert("Something went wrong!");
 			}
 		});
 	});
@@ -400,6 +506,7 @@ $(document).ready(function() {
 		$.ajax({
 			url: 'SearchService', 
 			type: 'POST',
+			timeout: 15000,
 			data: {
 				materialno: $('#materialno').val(), 	
 				brand: $('#brand').val(),
@@ -419,6 +526,14 @@ $(document).ready(function() {
 					alert("Product created succussfully!");
 				} else
 					alert("Something went wrong!");
+			},
+			fail: function(){
+				$(loadbtn).hide();
+				alert("Something went wrong!");
+			},
+			error: function(){
+				$(loadbtn).hide();
+				alert("Something went wrong!");
 			}
 		});
 	});

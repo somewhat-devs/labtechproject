@@ -1,14 +1,12 @@
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -22,6 +20,13 @@ import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.Drawing;
 import org.apache.poi.ss.usermodel.Picture;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.util.Units;
+import org.apache.poi.xwpf.usermodel.ParagraphAlignment;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.apache.poi.xwpf.usermodel.XWPFParagraph;
+import org.apache.poi.xwpf.usermodel.XWPFRun;
+import org.apache.poi.xwpf.usermodel.XWPFTable;
+import org.apache.poi.xwpf.usermodel.XWPFTableRow;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 
 import com.google.gson.Gson;
@@ -36,8 +41,6 @@ import com.itextpdf.layout.borders.SolidBorder;
 import com.itextpdf.layout.element.*;
 import com.itextpdf.layout.property.*;
 
-
-
 @WebServlet("/ExportService")
 public class ExportService extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -49,17 +52,18 @@ public class ExportService extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
 		String action = request.getParameter("action");
-		String[] tblheads = { "S. No.", "HSN Code", "Item name with description", "Make", "Qty.", "Unit Price", "Discount", "GST" };
+		String[] tblheads = { "S. No.", "Item name with description", "Make", "Qty.", "Unit Price",	"Discount", "GST", "Price \n(incl. GST)", "HSN Code" };
 		String prodlist[][] = new Gson().fromJson(request.getParameter("prodlist"), String[][].class);
-		String termsNcondition = request.getParameter("termsNcondition");
-
+		String otherfields[] = new Gson().fromJson(request.getParameter("otherfields"), String[].class);
+		int discount = Integer.parseInt(otherfields[4]);
+				
 		SimpleDateFormat formatter = new SimpleDateFormat("ddMMyyyy-HHmmss");
 		Date date = new Date();
 		String filename = "Quotation-" + formatter.format(date) ;
 		File desktop = new File(System.getProperty("user.home"), "/Desktop");
 		String url = request.getRequestURL().toString();
 		URL imFile = new URL(url.substring(0, url.lastIndexOf('/')) + "/images/logo.jpg");
-		
+				
 		if (action.equals("exportToPDF")) {
 			try {
 				
@@ -78,9 +82,15 @@ public class ExportService extends HttpServlet {
 
 				document.add(new Paragraph(" "));
 				document.add(new Paragraph(" "));
-				Text text = new Text("Quot  No. KBI/Q-III/2020-21").setFontSize(10);
+				Text text = new Text("Quotation  No: "+ otherfields[0]).setFontSize(10);
 				document.add(new Paragraph(text));
-
+				
+				text = new Text("Customer Name: "+ otherfields[1]).setFontSize(10);
+				document.add(new Paragraph(text));
+				
+				text = new Text("Subject: "+ otherfields[2]).setFontSize(10);
+				document.add(new Paragraph(text));
+				
 				formatter = new SimpleDateFormat("dd MMMM yyyy");
 				text = new Text("Quotations: Date : " + formatter.format(date)).setFontSize(10);
 				document.add(new Paragraph(text));
@@ -90,36 +100,92 @@ public class ExportService extends HttpServlet {
 				paragraph.add(new Text("Dear Sir,\n").setFontSize(10));
 				paragraph.add(new Text("In response to your enquiry, we are pleased to offer our rates as under:-\n")
 						.setFontSize(10));
-				paragraph.add(new Text("Department of Pharmaceuticals").setBold().setFontSize(10));
 				document.add(paragraph);
 
-				float[] pointColumnWidths = { 5, 5, 5, 5, 5, 5, 5, 5 };
+				float[] pointColumnWidths;
+				if (discount == 1) 
+					pointColumnWidths = new float[]{ 5, 5, 5, 5, 5, 5, 5, 5, 5 };
+				else
+					pointColumnWidths = new float[]{ 5, 5, 5, 5, 5, 5, 5, 5 };
+					
 				Table table = new Table(pointColumnWidths);
 				table.setWidth(UnitValue.createPercentValue(100));
 				table.setMarginTop(30);
 
-				for (int i = 0; i < 8; i++) {
-					table.addCell(new Cell().add(new Paragraph(tblheads[i])).setTextAlignment(TextAlignment.CENTER)
-							.setVerticalAlignment(VerticalAlignment.MIDDLE).setFontSize(10)
-							.setFontColor(new DeviceRgb(0, 112, 192)).setPaddings(5, 2, 5, 2)
+				for (int i = 0; i < 9; i++) {
+					if (i==5) 
+						if (discount == 0) 
+							continue;
+					
+					table.addCell(new Cell().add(new Paragraph(tblheads[i]))
+							.setTextAlignment(TextAlignment.CENTER)
+							.setVerticalAlignment(VerticalAlignment.MIDDLE)
+							.setFontSize(10)
+							.setFontColor(new DeviceRgb(0, 112, 192))
+							.setPaddings(5, 2, 5, 2)
 							.setBackgroundColor(new DeviceRgb(220, 233, 241))
 							.setBorder(new SolidBorder(new DeviceRgb(216, 216, 216), 1F)));
 				}
 
 				for (int i = 0; i < prodlist.length; i++) {
-					for (int j = 0; j < 8; j++) {
-						if (j == 2) {
-							table.addCell(new Cell().add(new Paragraph(prodlist[i][j])).setFontSize(10)
+					for (int j = 0; j < 9; j++) {
+						if (j == 1) {
+							table.addCell(new Cell().add(new Paragraph(prodlist[i][j]))
+									.setFontSize(10)
 									.setPaddings(5, 2, 5, 2)
 									.setBorder(new SolidBorder(new DeviceRgb(216, 216, 216), 1F)));
 							continue;
+						} 
+						if (j == 5) {
+							if (discount == 0) {
+								continue;
+							}
+						}	
+						if (j==5 || j==6) {
+							table.addCell(new Cell().add(new Paragraph(prodlist[i][j]+"%"))
+									.setFontSize(10)
+									.setPaddings(5, 2, 5, 2)
+									.setTextAlignment(TextAlignment.CENTER)
+									.setBorder(new SolidBorder(new DeviceRgb(216, 216, 216), 1F)));
+							continue;
 						}
-						table.addCell(new Cell().add(new Paragraph(prodlist[i][j])).setFontSize(10)
-								.setPaddings(5, 2, 5, 2).setTextAlignment(TextAlignment.CENTER)
+						table.addCell(new Cell().add(new Paragraph(prodlist[i][j]))
+								.setFontSize(10)
+								.setPaddings(5, 2, 5, 2)
+								.setTextAlignment(TextAlignment.CENTER)
 								.setBorder(new SolidBorder(new DeviceRgb(216, 216, 216), 1F)));
 					}
 				}
-
+				for (int j = 0; j < 8; j++) {
+					if (j==4) {
+						table.addCell(new Cell(1, 2).add(new Paragraph("Total Price: "))
+								.setFontSize(10)
+								.setPaddings(5, 2, 5, 2)
+								.setTextAlignment(TextAlignment.CENTER)
+								.setBorder(new SolidBorder(new DeviceRgb(255, 255, 255), 1F)));
+						continue;
+					}
+					if (j==5) {
+						if (discount == 1) {
+							table.addCell(new Cell().add(new Paragraph(""))
+									.setBorder(new SolidBorder(new DeviceRgb(255, 255, 255), 1F)));	
+							continue;
+						} else {
+							continue;
+						}
+					}
+					if (j==6) {
+						table.addCell(new Cell().add(new Paragraph(String.valueOf(otherfields[5])))
+								.setFontSize(10)
+								.setPaddings(5, 2, 5, 2)
+								.setTextAlignment(TextAlignment.CENTER)
+								.setBorder(new SolidBorder(new DeviceRgb(255, 255, 255), 1F)));
+						continue;
+					}
+					table.addCell(new Cell().add(new Paragraph(""))
+							.setBorder(new SolidBorder(new DeviceRgb(255, 255, 255), 1F)));			
+				}
+				
 				document.add(table);
 				
 				document.add(new Paragraph(" "));
@@ -128,7 +194,7 @@ public class ExportService extends HttpServlet {
 				paragraph.add(new Text("Terms and Conditions : ").setFontSize(10));
 				document.add(paragraph);
 				paragraph = new Paragraph();
-				paragraph.add(new Text(termsNcondition).setFontSize(10));
+				paragraph.add(new Text(otherfields[3]).setFontSize(10));
 				document.add(paragraph);
 				
 				document.close();
@@ -145,6 +211,7 @@ public class ExportService extends HttpServlet {
 								
 				HSSFWorkbook workbook = new HSSFWorkbook();
 		        HSSFSheet sheet = workbook.createSheet();
+		        int rowcount = 7;
 		        
 				InputStream is = imFile.openStream();
 				byte[] bytes = IOUtils.toByteArray(is);
@@ -163,31 +230,47 @@ public class ExportService extends HttpServlet {
 		        style.setVerticalAlignment(org.apache.poi.ss.usermodel.VerticalAlignment.CENTER);
 		        style.setFont(font);
 		        
-		        HSSFRow row7 = sheet.createRow(7);
-		        row7.setHeightInPoints((short) 15);
-		        HSSFCell cell71 = row7.createCell(1);
-		        cell71.setCellValue(new HSSFRichTextString("Quot  No. KBI/Q-III/2020-21"));
-		        cell71.setCellStyle(style);
-		        HSSFCell cell75 = row7.createCell(5);
-		        formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-		        cell75.setCellValue(new HSSFRichTextString("Quotations: Date : " + formatter.format(date)));
-		        cell75.setCellStyle(style);
+		        HSSFRow rowint = sheet.createRow(rowcount);
+		        rowint.setHeightInPoints((short) 15);
+		        HSSFCell cellint = rowint.createCell(1);
+		        cellint.setCellValue(new HSSFRichTextString("Quotation  No: "+otherfields[0]));
+		        cellint.setCellStyle(style);
+		        ++rowcount;
+
+		        rowint = sheet.createRow(rowcount);
+		        rowint.setHeightInPoints((short) 15);
+		        cellint = rowint.createCell(1);
+		        cellint.setCellValue(new HSSFRichTextString("Customer Name: "+ otherfields[1]));
+		        cellint.setCellStyle(style);
+		        ++rowcount;
+
+		        rowint = sheet.createRow(rowcount);
+		        rowint.setHeightInPoints((short) 15);
+		        cellint = rowint.createCell(1);
+		        cellint.setCellValue(new HSSFRichTextString("Subject: "+ otherfields[2]));
+		        cellint.setCellStyle(style);
+		        ++rowcount;
 		        
-		        HSSFRow row9 = sheet.createRow(9);
-		        row9.setHeightInPoints((short) 15);
-		        HSSFCell cell91 = row9.createCell(1);
-		        cell91.setCellValue(new HSSFRichTextString("Dear Sir,"));
-		        cell91.setCellStyle(style);
-		        HSSFRow row10 = sheet.createRow(10);
-		        row10.setHeightInPoints((short) 15);
-		        HSSFCell cell101 = row10.createCell(1);
-		        cell101.setCellValue(new HSSFRichTextString("In response to your enquiry, we are pleased to offer our rates as under:-"));
-		        cell101.setCellStyle(style);
-		        HSSFRow row11 = sheet.createRow(11);
-		        row11.setHeightInPoints((short) 15);
-		        HSSFCell cell111 = row11.createCell(1);
-		        cell111.setCellValue(new HSSFRichTextString("Department of Pharmaceuticals"));
-		        cell111.setCellStyle(style);	
+		        rowint = sheet.createRow(rowcount);
+		        rowint.setHeightInPoints((short) 15);
+		        cellint = rowint.createCell(1);
+		        formatter = new SimpleDateFormat("dd MMMM yyyy");
+		        cellint.setCellValue(new HSSFRichTextString("Quotations: Date : " + formatter.format(date)));
+		        cellint.setCellStyle(style);
+		        rowcount += 2;
+		        		        
+		        rowint = sheet.createRow(rowcount);
+		        rowint.setHeightInPoints((short) 15);
+		        cellint = rowint.createCell(1);
+		        cellint.setCellValue(new HSSFRichTextString("Dear Sir,"));
+		        cellint.setCellStyle(style);
+		        ++rowcount;
+		        rowint = sheet.createRow(rowcount);
+		        rowint.setHeightInPoints((short) 15);
+		        cellint = rowint.createCell(1);
+		        cellint.setCellValue(new HSSFRichTextString("In response to your enquiry, we are pleased to offer our rates as under:-"));
+		        cellint.setCellStyle(style);
+		        rowcount += 2;	
 		        
 		        HSSFCellStyle stylehead = workbook.createCellStyle();
 		        HSSFFont fonthead = workbook.createFont();
@@ -201,52 +284,108 @@ public class ExportService extends HttpServlet {
 		        styleprodname.setWrapText(true);
 		        styleprodname.setFont(fontprodname);
 		        
-		        HSSFRow row13 = sheet.createRow(13);
-		        row13.setHeightInPoints((short) 15);
-				for (int i = 1; i < 9; i++) {
-					HSSFCell cellhead = row13.createCell(i);
+		        HSSFRow rowhead = sheet.createRow(rowcount);
+		        rowhead.setHeightInPoints((short) 15);
+				for (int i = 1; i < 10; i++) {
+					if (i==6) 
+						if (discount == 0) 
+							continue;
+					HSSFCell cellhead;
+					if (i==7 || i==8 || i==9) {
+						if (discount == 0)
+							cellhead = rowhead.createCell(i-1);
+						else
+							cellhead = rowhead.createCell(i);
+					} else {
+						cellhead = rowhead.createCell(i);
+					}
 					cellhead.setCellValue(new HSSFRichTextString(tblheads[(i-1)]));
 					cellhead.setCellStyle(stylehead);
 				}
+		        ++rowcount;
+
+				if (discount == 0)
+					sheet.setColumnWidth((7), 18 * 256);	
+				else
+					sheet.setColumnWidth((8), 18 * 256);
 				
 				for (int i = 0; i < prodlist.length; i++) {
-					HSSFRow rowproduct = sheet.createRow(i+14);
-					for (int j = 0; j < 8; j++) {
-						if (j==2) {
+					HSSFRow rowproduct = sheet.createRow(i+rowcount);
+					for (int j = 0; j < 9; j++) {
+						if (j==1) {
 							HSSFCell cellproduct = rowproduct.createCell(j+1);
 							cellproduct.setCellValue(new HSSFRichTextString(prodlist[i][j]));
 							cellproduct.setCellStyle(styleprodname);
 							sheet.setColumnWidth((j+1), 65 * 256);	
 							continue;
-						} if (j==1 || j==3) {
-							HSSFCell cellproduct = rowproduct.createCell(j+1);
+						} if (j==2 || j==8) {							
+							HSSFCell cellproduct;
+							if (j==8) {
+								if (discount == 0)
+									cellproduct = rowproduct.createCell(j);
+								else
+									cellproduct = rowproduct.createCell(j+1);
+							} else 
+								cellproduct = rowproduct.createCell(j+1);
 							cellproduct.setCellValue(new HSSFRichTextString(prodlist[i][j]));
 							cellproduct.setCellStyle(style);
-							sheet.setColumnWidth((j+1), 15 * 256);	
+							sheet.setColumnWidth((j+1), 10 * 256);	
 							continue;
-						} if (j==0 || j==4 || j==5) {
-							HSSFCell cellproduct = rowproduct.createCell(j+1);
-							cellproduct.setCellValue(Double.valueOf((prodlist[i][j])));
+						} if (j==6 || j==7) {							
+							HSSFCell cellproduct; 
+							if (discount == 0)
+								cellproduct = rowproduct.createCell(j);
+							else
+								cellproduct = rowproduct.createCell(j+1);
+							if (j==6)
+								cellproduct.setCellValue(new HSSFRichTextString(prodlist[i][j]+"%"));
+							else
+								cellproduct.setCellValue(Double.valueOf(prodlist[i][j]));
 							cellproduct.setCellStyle(style);
-							sheet.setColumnWidth((j+1), 15 * 256);	
 							continue;
-						} else {
-							HSSFCell cellproduct = rowproduct.createCell(j + 1);
-							cellproduct.setCellValue(prodlist[i][j]);
-							cellproduct.setCellStyle(style);
-							sheet.setColumnWidth((j+1), 15 * 256);
-						}
+						} if (j==5) {
+							if (discount == 0)
+								continue;
+							else {
+								HSSFCell cellproduct = rowproduct.createCell(j+1);
+								cellproduct.setCellValue(new HSSFRichTextString(prodlist[i][j]+"%"));
+								cellproduct.setCellStyle(style);
+								sheet.setColumnWidth((j+1), 12 * 256);
+								continue;
+							}
+								
+						}						
+						HSSFCell cellproduct = rowproduct.createCell(j+1);
+						cellproduct.setCellValue(Double.valueOf(prodlist[i][j]));
+						cellproduct.setCellStyle(style);
+						sheet.setColumnWidth((j+1), 12 * 256);
 					}
 				}
+				rowcount += prodlist.length;	int tpcell;
+				if (discount == 0)
+					tpcell = 6;
+				else
+					tpcell = 7;
+				rowint = sheet.createRow(rowcount);
+		        rowint.setHeightInPoints((short) 15);
+		        cellint = rowint.createCell(tpcell);
+		        cellint.setCellValue(new HSSFRichTextString("Total Price "));
+		        cellint.setCellStyle(style);
+		        ++tpcell;
+		        cellint = rowint.createCell(tpcell);
+		        cellint.setCellValue(Double.valueOf(otherfields[5]));
+		        cellint.setCellStyle(style);								
+		        rowcount += 2;
 				
-		        HSSFRow rowtc1 = sheet.createRow(prodlist.length+17);
+		        HSSFRow rowtc1 = sheet.createRow(prodlist.length+rowcount);
 		        rowtc1.setHeightInPoints((short) 15);
-		        HSSFCell celltc11 = rowtc1.createCell(3);
+		        HSSFCell celltc11 = rowtc1.createCell(2);
 		        celltc11.setCellValue(new HSSFRichTextString("Terms and Conditions : "));
 		        celltc11.setCellStyle(style);
-		        HSSFRow rowtc2 = sheet.createRow(prodlist.length+18);
-		        HSSFCell celltc12 = rowtc2.createCell(3);
-		        celltc12.setCellValue(new HSSFRichTextString(termsNcondition));
+		        ++rowcount;
+		        HSSFRow rowtc2 = sheet.createRow(prodlist.length+rowcount);
+		        HSSFCell celltc12 = rowtc2.createCell(2);
+		        celltc12.setCellValue(new HSSFRichTextString(otherfields[3]));
 		        celltc12.setCellStyle(styleprodname);
 		        		        
 		        File xlsfile = new File(desktop+"\\"+filename+".xls");
@@ -257,6 +396,175 @@ public class ExportService extends HttpServlet {
 				e.printStackTrace();
 			}
 		}
+		
+		if (action.equals("exportToWord")) {
+			try {
+				
+				XWPFDocument doc = new XWPFDocument(); 
+				XWPFParagraph par = doc.createParagraph();
+				XWPFRun run = par.createRun();
+		        String filePath = getServletContext().getRealPath("/");
+				File imgFile = new File(filePath +"/images/logo.jpg");
+				run.addPicture(new FileInputStream(imgFile), XWPFDocument.PICTURE_TYPE_JPEG, "logo.jpg", Units.pixelToEMU(600), Units.pixelToEMU(100)); 
+				
+	            XWPFParagraph paragraph = doc.createParagraph();  
+	            run = paragraph.createRun(); 
+	            
+	            run.addBreak();
+				run.setText("Quotation  No: "+ otherfields[0]); 
+	            run.addBreak(); run.addBreak();
+				
+				run.setText("Customer Name: "+ otherfields[1]); 
+	            run.addBreak(); run.addBreak();
+				
+				run.setText("Subject: "+ otherfields[2]); 
+	            run.addBreak(); run.addBreak();
+	            
+	    		formatter = new SimpleDateFormat("dd MMMM yyyy");
+				run.setText("Quotations: Date : "+formatter.format(date));
+				run.addBreak(); run.addBreak();
+				
+				run.setText("Dear Sir,\n");
+				run.addBreak();
+				run.setText("In response to your enquiry, we are pleased to offer our rates as under:-\n");
+				run.addBreak(); run.addBreak();
+				
+				int colind;
+				XWPFTable tab = doc.createTable(1, 1);
+	            XWPFTableRow row = tab.getRow(0); 
+	            for (int i = 0; i < 9; i++) {
+	            	if (i==0) {
+	            		XWPFParagraph p1 = row.getCell(0).getParagraphs().get(0);
+	    				p1.setAlignment(ParagraphAlignment.CENTER);
+	    				XWPFRun r1 = p1.createRun();
+	    				r1.setText(tblheads[i]);
+	    				r1.setBold(true);
+	    				continue;
+	            	}            		
+					if (i==5) 
+						if (discount == 0) 
+							continue;
+					XWPFParagraph p1 = row.addNewTableCell().getParagraphs().get(0);
+					p1.setAlignment(ParagraphAlignment.CENTER);
+					XWPFRun r1 = p1.createRun();
+					r1.setText(tblheads[i]);
+    				r1.setBold(true);
+				}
+	            
+	            for (int i = 0; i < prodlist.length; i++) {
+	            	row = tab.createRow();
+					for (int j = 0; j < 9; j++) {
+						if (j == 1) {
+							row.getCell(j).setText(prodlist[i][j]);;
+							continue;
+						} 
+						if (j == 5) {
+							if (discount == 0) {
+								continue;
+							}
+						}	
+						if (j==5 || j==6) {
+							if (j==6) {
+								if (discount==1)
+									colind = j;
+								else 
+									colind = j-1;
+							} else {
+								colind = j;
+							}
+							XWPFParagraph p1 = row.getCell(colind).getParagraphs().get(0);
+							p1.setAlignment(ParagraphAlignment.CENTER);
+							XWPFRun r1 = p1.createRun();
+							r1.setText(prodlist[i][j]+"%");
+							continue;
+						}
+						if (j==7 || j==8) {
+							if (discount==1)
+								colind = j;
+							else 
+								colind = j-1;
+							XWPFParagraph p1 = row.getCell(colind).getParagraphs().get(0);
+							p1.setAlignment(ParagraphAlignment.CENTER);
+							XWPFRun r1 = p1.createRun();
+							r1.setText(prodlist[i][j]);
+							continue;
+						}
+						XWPFParagraph p1 = row.getCell(j).getParagraphs().get(0);
+						p1.setAlignment(ParagraphAlignment.CENTER);
+						XWPFRun r1 = p1.createRun();
+						r1.setText(prodlist[i][j]);
+					}
+				}
+	            
+	            row = tab.createRow();
+	            for (int j = 0; j < 9; j++) {
+					if (j==5) {
+						if (discount == 1) {
+							row.getCell(j)
+								.getParagraphs().get(0)
+								.createRun()
+								.setText("");
+							continue;
+						} else {
+							continue;
+						}
+					}
+					if (j==6) {
+						if (discount==1)
+							colind = j;
+						else 
+							colind = j-1;
+						XWPFParagraph p1 = row.getCell(colind).getParagraphs().get(0);
+						p1.setAlignment(ParagraphAlignment.CENTER);
+						XWPFRun r1 = p1.createRun();
+						r1.setText("Total Price: ");
+						continue;
+					}
+					if (j==7 || j==8) {
+						if (discount==1)
+							colind = j;
+						else 
+							colind = j-1;	
+						if (j==7) {
+							XWPFParagraph p1 = row.getCell(colind).getParagraphs().get(0);
+							p1.setAlignment(ParagraphAlignment.CENTER);
+							XWPFRun r1 = p1.createRun();
+							r1.setText(otherfields[5]);
+						} else {
+							row.getCell(colind)
+								.getParagraphs().get(0)
+								.createRun()
+								.setText("");
+						}					
+						continue;
+					}
+					row.getCell(j)
+						.getParagraphs().get(0)
+						.createRun()
+						.setText("");		
+				}
+	            
+	            paragraph = doc.createParagraph(); 
+	            paragraph.setWordWrapped(true);
+	            run = paragraph.createRun(); 
+	            run.addBreak(); run.addBreak();
+				run.setText("Terms and Conditions : ");
+				run.addBreak();
+				run.setText(otherfields[3]);
+				run.addBreak();
+		        			
+				File docfile = new File(desktop+"\\"+filename+".doc");
+				FileOutputStream out = new FileOutputStream(docfile);
+		        doc.write(out); 
+				doc.close();
+				out.flush();
+				out.close();
+				
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {	

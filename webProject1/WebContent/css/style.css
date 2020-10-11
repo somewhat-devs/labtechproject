@@ -1,6 +1,9 @@
 body {
-	margin: 1% 3%;
-	background: #f8f8f8;
+	margin: 0% 3% 2% 3%;
+	background: -webkit-linear-gradient(to right, #f8f8f8 25%, #73b8d9);
+	background: -moz-linear-gradient(to right, #f8f8f8 25%, #73b8d9);
+	background: linear-gradient(to right, #f8f8f8 25%, #73b8d9);
+/* 	background: linear-gradient(110deg, #f8f8f8 20%, #73b8d9); */
 }
 
 a{
@@ -9,30 +12,51 @@ a{
 
 a:hover{
 	text-decoration: none;
-	color: #000;
+	color: #fff;
+}
+
+#main-logo{
+	width: 45%;
+	margin-left: 50%;
+}
+
+.header .col-lg-2{
+	text-align: center;
 }
 
 .head-links{
-	font-size: 14px;
+	font-size: 12px;
+	color: #343a40;
 }
 
 .row-div{
 	padding: 50px 0px;
 }
 
-.txtfld-tbl, #main-tbl {
+#main-tbl {
 	width: 100% !important;
 	border-bottom: 0;
 }
 
-.txtfld-tbl td {
+.billfields-tbl, .srchfields-tbl{
+	border: 1px solid #555;
+	border-radius: 10px;
+	box-shadow: 0px 0px 5px gray;
+}
+
+.fields {
 	padding-right: 5%;
-	padding-bottom: 2%;
-	vertical-align: top;
+	padding-bottom: 2.5%;
+	padding-top: 2.5%;
+}
+
+#resultbtn, #createbtn{
+	width: 300px;
+	margin-left: 25px;
 }
 
 .table {
-	background: #fff;
+	background: #fbfbfb;
 	box-shadow: 0px 0px 20px grey;
 }
 
@@ -60,7 +84,10 @@ a:hover{
 .clr-srchinp-btn {
 	cursor: pointer;
 	padding: 7px;
-	font-size: 13px;
+	width: 38px;
+	background-color: revert;
+	border: revert;
+	opacity: 0.5;
 }
 
 .bill-inputs{
@@ -102,12 +129,15 @@ input::-webkit-inner-spin-button {
 	margin-left: 5px;
 }
 
-#billtbl-empty{
+#billtbl-empty, #main-head{
 	text-align: center;
 }
 
 hr{
-	border-top-color: rgba(0, 0, 0, 0.7);
+	border-top-color: #0007;
+	box-shadow: 0px 2px 5px gray;
+	margin-left: -3%;
+	margin-right: -3%;
 }
 
 .redtext{
@@ -129,4 +159,18 @@ hr{
 
 .scrolltop-icon img{
 	width: 35px;
+}
+
+#discount-enbl{
+	margin-left: 7px;
+    transform: scale(1.2);	
+}
+
+.btn:disabled{
+	cursor: auto;
+}
+
+.export-icon{
+	width: 40px;
+	margin-left: 30px;
 }

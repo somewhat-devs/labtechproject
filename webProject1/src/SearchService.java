@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.sql.*;
 
+import javax.naming.InitialContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -15,9 +16,7 @@ import com.google.gson.Gson;
 
 @WebServlet("/SearchService")
 public class SearchService extends HttpServlet {
-	private static final long serialVersionUID = 1L;								
-	private static String connectionURL = "jdbc:mysql://localhost:3306/labtech";
-	private static Connection connection = null;
+	private static final long serialVersionUID = 1L;
 	private static Statement statement, statementSect, statementHscode, statementBrand = null;
 	private static ResultSet rs, rs2, rs3, rs4 = null;
 
@@ -32,11 +31,19 @@ public class SearchService extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-
+				
 		try {
+			InitialContext initialContext = new InitialContext();
+			String connectionURL = (String) initialContext.lookup("java:comp/env/connectionURL");
+			String classforName = (String) initialContext.lookup("java:comp/env/classforName");
+			String username = (String) initialContext.lookup("java:comp/env/username");
+			String password = (String) initialContext.lookup("java:comp/env/password");
+			Connection connection = null;
+			Class.forName(classforName).newInstance();
+			connection = DriverManager.getConnection(connectionURL, username, password);
+			
 			String action = request.getParameter("action");
-			Class.forName("com.mysql.cj.jdbc.Driver").newInstance();				// initializing database connection and statements
-			connection = DriverManager.getConnection(connectionURL, "root", "");
+			
 			
 			if (action.equals("searchProduct")) {	
 				statement = connection.createStatement();
@@ -44,13 +51,12 @@ public class SearchService extends HttpServlet {
 				statementHscode = connection.createStatement();
 				statementBrand = connection.createStatement();
 			
-				String QueryString = "SELECT * from product_table where ", custrateqr = "consumer_rate <> 'On Request' and cast(consumer_rate as unsigned) ";
+				String QueryString = "SELECT * from product_table where ";
 				String materialno = request.getParameter("materialno").trim();				// get form parameters from request
 				String brand = request.getParameter("brand").trim();
 				String productname = request.getParameter("productname").trim();
 				String hscode = request.getParameter("hscode").trim();
 				String section = request.getParameter("section").trim();					// check which attributes are provided by user, based on that query is written and executed.
-				String custrate = request.getParameter("custrate").trim();	
 				int qrfor1 = 0 ;		
 				
 				if (!materialno.equals("")) {
@@ -83,23 +89,7 @@ public class SearchService extends HttpServlet {
 					
 					QueryString += "section_id = (select section_id from section_table where section_name = '"+ section +"') ";
 				}
-				if (!custrate.equals("none")) {
-					
-					switch (custrate) {
-					case "1":	custrateqr += "< 500 ";						break;
-					case "2":	custrateqr += "between 500 and 1000 ";		break;
-					case "3":	custrateqr += "between 1000 and 5000 ";		break;
-					case "4":	custrateqr += "between 5000 and 10000 ";	break;
-					case "5":	custrateqr += "between 10000 and 25000 ";	break;
-					case "6":	custrateqr += "between 25000 and 100000 ";	break;
-					case "7":	custrateqr += "> 100000 ";					break;
-					}
-	
-					if (qrfor1 == 0) 	qrfor1 = 1;
-					else 				QueryString += "and ";
-					
-					QueryString += custrateqr;
-				}
+				
 				QueryString += ";";
 				
 //   			log("- "+materialno+" - "+brand+" - "+productname+" - "+hscode+" - "+section+" - "+custrateqr+" - "+QueryString);
@@ -258,7 +248,7 @@ public class SearchService extends HttpServlet {
 				connection.close();
 				
 				if (rowsInserted>0)	response.getWriter().write("success");
-				else			response.getWriter().write("fail");
+				else				response.getWriter().write("fail");
 				
 			}
 			

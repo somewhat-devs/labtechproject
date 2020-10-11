@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <%@ page import="java.sql.*"%>
 <%@ page import="java.io.*"%>
-<%@ page import="com.google.gson.Gson"%>
+<%@ page import="javax.naming.InitialContext" %>
 <html>
 <head>
 <meta charset="ISO-8859-1">
@@ -11,34 +11,52 @@
 <script type="text/javascript" src="js/datatables.min.js"></script>
 <script type="text/javascript" src="js/main.js"></script>
 <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" />
-<link rel="stylesheet" type="text/css" href="css/datatables.min.css" />
 <link rel="stylesheet" type="text/css" href="css/style.css" />
 </head>
 <body>
-	<h2>Create new product.</h2>
 	<%
 		try {
-		String connectionURL = "jdbc:mysql://localhost:3306/labtech";
-		Connection connection = null;
-		Statement statement = null;
-		ResultSet rs = null;
-		Class.forName("com.mysql.cj.jdbc.Driver").newInstance();
-		connection = DriverManager.getConnection(connectionURL, "root", "");
+			InitialContext initialContext = new InitialContext();
+			String connectionURL = (String) initialContext.lookup("java:comp/env/connectionURL");
+			String classforName = (String) initialContext.lookup("java:comp/env/classforName");
+			String username = (String) initialContext.lookup("java:comp/env/username");
+			String password = (String) initialContext.lookup("java:comp/env/password");
+			Connection connection = null;
+			Class.forName(classforName).newInstance();
+			connection = DriverManager.getConnection(connectionURL, username, password);
+			Statement statement = null;
+			ResultSet rs = null;
 	%>
 	
 	<div class="row row-div">
 		<div class="col-lg-12">
-			<p class="redtext">* required fields</p>
-			<table class="txtfld-tbl">
-				<tr>
-					<td><label for="materialno">Material No/Catalog Id: <span class="redtext">*</span></label> <!-- creating textFields and dropdowns  -->
+			<div class="row">
+				<div class="col-lg-12">
+					<div class="row">
+						<div class="col-lg-11">
+							<h2>Create new product.</h2>
+						</div>
+						<div class="col-lg-1">
+							<a href="index.jsp">
+								<button class="btn btn-outline-dark"> back </button>
+							</a>
+						</div>
+					</div>
+					<br>
+					<p class="redtext">* required fields</p>
+					<br>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-lg-4 fields">
+					<label for="materialno">Material No/Catalog Id: <span class="redtext">*</span></label> <!-- creating textFields and dropdowns  -->
 						<div class="input-group">
 							<input type="text" id="materialno" class="form-control create-inputs-req"
 								name="materialno" placeholder="Enter material no..." autofocus>
 						</div>
-					</td>
-						
-					<td><label for="brand">Brand/Make:</label>
+				</div>
+				<div class="col-lg-4 fields">
+					<label for="brand">Brand/Make:</label>
 						<div class="input-group">
 							<input type="text" id="brand" class="form-control"  list="brandlist"
 							name="brand" placeholder="Enter brand/make..." >
@@ -57,45 +75,51 @@
 							statement.close();
 							%>
 						</datalist>
-					</td>
-					
-					<td><label for="packing">packing:</label>
+				</div>
+				<div class="col-lg-4 fields">
+					<label for="packing">packing:</label>
 						<div class="input-group">
 							<input type="text" id="packing" class="form-control" 
 							name="packing" placeholder="Enter packing type..." >
 						</div>
-					</td>
-				</tr>
-				
-				<tr>
-					<td colspan="3"><label for="productname">Product Name: <span class="redtext">*</span></label>
+				</div>
+			</div>
+			
+			<div class="row">
+				<div class="col-lg-12 fields">
+					<label for="productname">Product Name: <span class="redtext">*</span></label>
 						<div class="input-group">
 							<textarea id="productname" class="form-control create-inputs-req" name="productname" 
 							placeholder="Enter product description..." rows="2" ></textarea>
 						</div>
-					</td>
-				</tr>
+				</div>
+			</div>
 
-				<tr>
-					<td><label for="consumerrate">Consumer rate: <span class="redtext">*</span></label>
+			<div class="row">
+				<div class="col-lg-2"></div>
+				<div class="col-lg-4 fields">
+					<label for="consumerrate">Consumer rate: <span class="redtext">*</span></label>
 						<div class="input-group">
-							<input type="text" id="consumerrate" class="form-control create-inputs-num" 
+							<input type="text" id="consumerrate" class="form-control" 
 							name="consumerrate" placeholder="Enter consumer rate..." >
 						</div>
 						<span class="errormsg">*only numbers allowed</span>
-					</td>
-
-					<td><label for="gstrate">GST rate:</label>
+				</div>
+				<div class="col-lg-4 fields">
+					<label for="gstrate">GST rate:</label>
 						<div class="input-group">
 							<input type="text" id="gstrate" class="form-control create-inputs-num" 
 							name="gstrate" placeholder="Enter GST rate..." >
 						</div>
 						<span class="errormsg">*only numbers allowed</span>
-					</td>
-				</tr>
+				</div>
+				<div class="col-lg-2"></div>
+			</div>
 
-				<tr>
-					<td><label for="hscode">HSN code:</label>
+			<div class="row">
+				<div class="col-lg-2"></div>
+				<div class="col-lg-4 fields">
+					<label for="hscode">HSN code:</label>
 						<div class="input-group">
 							<input type="text" id="hscode"class="form-control" list="hscodelist"
 							name="hscode" placeholder="Enter HSN code..." >
@@ -114,9 +138,10 @@
 							statement.close();
 							%>
 						</datalist>
-					</td>
+				</div>
 
-					<td><label for="section">Section:</label>
+				<div class="col-lg-4 fields">
+					<label for="section">Section:</label>
 						<div class="input-group">
 							<input type="text" id="section" class="form-control" list="sectionlist"
 							name="section" placeholder="Enter section name..." >
@@ -135,13 +160,20 @@
 							statement.close();
 							%>
 						</datalist>
-					</td>
-				</tr>
-			</table>
+				</div>
+				<div class="col-lg-2"></div>
+			</div>
 			<br>
-			<button id="createbtn" class="btn btn-primary">Create</button>
-			<span id="create-errormsg" class="errormsg">*Please fill atleast one of the inputs.</span> 
-			<img id="load-create" class="load-icon" src="images/load.gif">
+			<div class="row">
+				<div class="col-lg-4"></div>
+				<div class="col-lg-4">
+					<button id="createbtn" class="btn btn-primary btn-lg">Create Product</button>
+					<img id="load-create" class="load-icon" src="images/load.gif">
+				</div>
+				<div class="col-lg-4">
+					<span id="create-errormsg" class="errormsg">*Please fill atleast one of the inputs.</span>
+				</div>
+			</div>
 		</div>
 	</div>
 	
