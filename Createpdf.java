@@ -65,8 +65,12 @@ public class Createpdf extends HttpServlet {
 //		String termsNcondition = request.getParameter("termsNcondition");
 
 		String action = "exportToPDF";
+		String subject="Temporary Subject";
+		String email1="manoj_maru@hotmail.com";
+		String email2="rana_1990sagar@yahoo.com";
 		String customername=request.getParameter("");
 		String quotationno=request.getParameter("");
+		String custaddress=request.getParameter("");
 		double total=0;
 		double p1=0,p2=0,p3=0;
 		String prodlist[][] = { 
@@ -96,34 +100,33 @@ public class Createpdf extends HttpServlet {
 				Image image = new Image(data);
 				image.setAutoScale(true);
 				document.add(image);
-
-				document.add(new Paragraph(" "));
-				document.add(new Paragraph(" "));
-				Text text = new Text("Customer Name :" + customername).setFontSize(10);
-				document.add(new Paragraph(text));
-
-			/*	document.add(new Paragraph(" "));
-				document.add(new Paragraph(" "));
-			    text = new Text("Quot  No :" + quotationno).setFontSize(10);
-				document.add(new Paragraph(text));*/
 				
-				document.add(new Paragraph(" "));
-				document.add(new Paragraph(" "));
-				 text = new Text("Quot  No. KBI/Q-III/2020-21").setFontSize(10);
-				document.add(new Paragraph(text));
-				
-				
-
 				formatter = new SimpleDateFormat("dd MMMM yyyy");
-				text = new Text("Quotations: Date : " + formatter.format(date)).setFontSize(10);
+				document.add(new Paragraph(" "));
+				document.add(new Paragraph(" "));
+			    Text text = new Text("Quotation  No :" + quotationno +"/t/t/t/t/t/t/t"+ formatter.format(date)).setFontSize(10);
+				document.add(new Paragraph(text));
+				
+				document.add(new Paragraph(" "));
+				document.add(new Paragraph(" "));
+			    text = new Text("To:").setFontSize(10);
 				document.add(new Paragraph(text));
 
+				document.add(new Paragraph(" "));
+				document.add(new Paragraph(" "));
+				text = new Text(customername).setFontSize(10);
+			    text = new Text(custaddress).setFontSize(10);
+				document.add(new Paragraph(text));
+
+				document.add(new Paragraph(" "));
+				text = new Text("Subject:" +subject).setFontSize(10);
+				document.add(new Paragraph(text));
+				
 				document.add(new Paragraph(" "));
 				Paragraph paragraph = new Paragraph();
 				paragraph.add(new Text("Dear Sir,\n").setFontSize(10));
 				paragraph.add(new Text("In response to your enquiry, we are pleased to offer our rates as under:-\n")
 						.setFontSize(10));
-				paragraph.add(new Text("Department of Pharmaceuticals").setBold().setFontSize(10));
 				document.add(paragraph);
 
 				float[] pointColumnWidths = { 5, 5, 5, 5, 5, 5, 5, 5, 5 };
@@ -195,6 +198,47 @@ public class Createpdf extends HttpServlet {
 				paragraph.add(new Text(termsNcondition).setFontSize(10));
 				document.add(paragraph);
 				
+				paragraph.add(new Text("Delivery : ").setFontSize(10));
+				document.add(paragraph);
+				
+				document.add(new Paragraph(" "));
+				document.add(new Paragraph(" "));
+				paragraph = new Paragraph();
+				paragraph.add(new Text("In about two weeks , from receipt of your order/payment. You may send your cheque for payment along with the order").setFontSize(10));
+				document.add(paragraph);
+				
+				paragraph.add(new Text("Payment : ").setFontSize(10));
+				document.add(paragraph);
+				
+				document.add(new Paragraph(" "));
+				document.add(new Paragraph(" "));
+				paragraph = new Paragraph();
+				paragraph.add(new Text("Send the payment directly by RTGS/NEFT to our account and inform us accordingly,Our Bank details are as under;").setFontSize(10));
+				document.add(paragraph);
+				
+				document.add(new Paragraph(" "));
+				document.add(new Paragraph(" "));
+				paragraph = new Paragraph();
+				paragraph.add(new Text("STATE BANK OF INDIA,Subhash Road,Vile Parle(E) Br; Mumbai-400057.").setFontSize(10));
+				paragraph.add(new Text("A/c No: 37046574015 /t/t/t/t/t IFS/RGTS Code No: SBIN0017610").setBold().setFontSize(10));
+				document.add(paragraph);
+				
+				document.add(new Paragraph(" "));
+				document.add(new Paragraph(" "));
+				paragraph = new Paragraph();
+				paragraph.add(new Text(" All quoted prices are valid for 30 days from date of quotation.").setFontSize(10));
+				paragraph.add(new Text(" Please reference your Kasliwal Brothers quotation number on ypur purchase orders").setFontSize(10));
+				paragraph.add(new Text(" Please mention your CST/TIN No./GST No. in your Purchase Order").setFontSize(10));
+				paragraph.add(new Text(" If there is any Road Permit Entry/Exit form is required to ship thje material then please courier the same to below Address").setFontSize(10));
+				paragraph.add(new Text(" Please mention Quotation number on your Purchase Order and send it to on"+email1 +"and copy to "+email2).setFontSize(10));
+				document.add(paragraph);
+				
+				document.add(new Paragraph(" "));
+				document.add(new Paragraph(" "));
+				paragraph = new Paragraph();
+				paragraph.add(new Text("SUBJECT TO INDORE JURISDICTION /t/t/t FOR KASLIWAL BROTHERS").setFontSize(10));
+				paragraph.add(new Text("GST NO : 232323423I2J23I4IJ    /t/t/t Authorized Signatory,").setBold().setFontSize(10));
+				document.add(paragraph);
 				document.close();
 
 				response.setContentType("text/html");
