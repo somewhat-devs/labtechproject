@@ -6,6 +6,7 @@
 <head>
 <meta charset="ISO-8859-1">
 <title>Import product</title>
+<link rel="icon" href="images/webicon.png">
 <script src="js/jquery-3.5.0.min.js"></script>
 <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" />
 <link rel="stylesheet" type="text/css" href="css/style.css" />
@@ -35,12 +36,12 @@
 					characters.</p>
 			</div>
 			<br>
-			<form id="importForm" enctype="multipart/form-data">
+			<form id="importForm" enctype="multipart/form-data" method="post">
 				<div class="row">
 					<div class="col-lg-4"></div>
 					<div class="col-lg-4">
 						<input id="importFile" class="form-control" name="importFile"
-							type="file" multiple accept=".xls">
+							type="file" accept=".xls,.xlsx">
 					</div>
 					<div class="col-lg-4"></div>
 				</div>
@@ -48,8 +49,8 @@
 				<div class="row">
 					<div class="col-lg-3"></div>
 					<div class="col-lg-3">
-						<input id="scanimport" type="submit"
-							class="form-control btn btn-primary" value="Scan excel file">
+						<button id="scanimport" type="submit"
+							class="form-control btn btn-primary">Scan excel file</button>
 					</div>
 					<div class="col-lg-3">
 						<button id="contimport" class="form-control btn btn-success"
@@ -59,8 +60,9 @@
 				</div>
 			</form>
 			<br>
-			<br> <img id="load-export-pdf" class="load-icon"
-				src="images/load.gif">
+			<br> 
+			<img class="load-icon scan" src="images/load.gif">
+			<img class="load-icon conti" src="images/load.gif">
 			<div id="resp"></div>
 			<br>
 		</div>
@@ -72,12 +74,28 @@
 
 	$(document).ready(function() {
 		var uploadedFilePath;
+		
+		$('#importFile').on('change', function(){
+			var fileExt = $('#importFile').val().split('.').pop().toLowerCase();
+            if ($.inArray(fileExt, ['xls','xlsx']) == -1) {
+            	$('#importFile').addClass('invalid');
+            	alert("Please upload only Excel files (.xlsx, .xls extension) !");
+            } else 
+            	$('#importFile').removeClass('invalid');
+		});	
 	
 		$('#importForm').on('submit', function(e) {
             e.stopPropagation();
             e.preventDefault();
-            $('.load-icon').show();
             var data = new FormData(this);
+            var fileExt = $('#importFile').val().split('.').pop().toLowerCase();
+            if ($.inArray(fileExt, ['xls','xlsx']) == -1) {
+            	$('#importFile').addClass('invalid');
+            	alert("Please upload only Excel files (.xlsx, .xls) are allowed!");
+            } else 
+            	$('#importFile').removeClass('invalid');
+            	
+            $('.load-icon.scan').show();
             $.ajax({
                 url :  'ImportService',
                 type : 'POST',
@@ -86,21 +104,27 @@
                 processData : false,
                 contentType : false,
                 success : function(data) {
-            		$('.load-icon').hide();
-                    $('#resp').html(data[1]);
-                    uploadedFilePath = data[0];
-                    if (data[2] == "0")
-                    	$('#contimport').prop('disabled', false);                    	
+                	if (data == "fail") {
+            			$('.load-icon.scan').hide();
+                		alert("Something went wrong!");
+                	} else {	
+            			$('.load-icon.scan').hide();
+               		    $('#resp').html(data[1]);
+                    	uploadedFilePath = data[0];
+                    	if (data[2] == "0")
+                    		$('#contimport').prop('disabled', false);  
+                    }                  	
                 },
                 fail : function(){
+            		$('.load-icon.scan').hide();
                 	alert("Something went wrong!");
                 }
-           });
+            }); 
         });
         
         $('#contimport').on('click', function(e) {
         	$('#resp').html("");
-            $('.load-icon').show();
+            $('.load-icon.conti').show();
             $.ajax({
                 url :  'ImportService',
                 type : 'POST',
@@ -109,10 +133,16 @@
                 	uploadedFilePath: uploadedFilePath
                 },
                 success : function(data) {  
-            		$('.load-icon').hide();                  
-                    $('#resp').html(data+" products are added to database successfully.");
+                	if (data == "fail") {
+            			$('.load-icon.conti').hide();
+                		alert("Something went wrong!");
+                	} else {	
+            			$('.load-icon.conti').hide();                  
+                    	$('#resp').html(data+" products are added to database successfully.");
+                    }
                 },
                 fail : function(){
+            		$('.load-icon.conti').hide();
                 	alert("Something went wrong!");
                 }
            }); 

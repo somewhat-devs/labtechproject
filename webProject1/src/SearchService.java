@@ -253,8 +253,10 @@ public class SearchService extends HttpServlet {
 			}
 			
 		} catch (SQLException ex) { 
+			response.getWriter().write("fail");
 			ex.printStackTrace();
 		} catch (Exception ex) {
+			response.getWriter().write("fail");
 			ex.printStackTrace();
 		}
 

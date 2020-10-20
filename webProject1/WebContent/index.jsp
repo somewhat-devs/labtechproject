@@ -8,6 +8,7 @@
 <head>
 <meta charset="ISO-8859-1">
 <title>Quotation Builder</title>
+<link rel="icon" href="images/webicon.png">
 <script src="js/jquery-3.5.0.min.js"></script>
 <script type="text/javascript" src="js/datatables.min.js"></script>
 <script type="text/javascript" src="js/main.js"></script>
@@ -68,7 +69,7 @@
 						<div class="col-lg-5 fields">
 							<label for="quotationno">Quotation No:</label>
 							<div class="input-group">
-								<input type="text" id=quotationno class="form-control"
+								<input type="text" id=quotationno class="form-control otherfields"
 									name="quotationno" placeholder="Enter quotation no..." autofocus>
 								<img class="input-group-text clr-srchinp-btn"
 									src="images/clear.png">
@@ -78,10 +79,8 @@
 						<div class="col-lg-5 fields">
 							<label for="customername">Customer Name:</label>
 							<div class="input-group">
-								<input type="text" id=customername class="form-control"
-									name="customername" placeholder="Enter customer name...">
-								<img class="input-group-text clr-srchinp-btn"
-									src="images/clear.png">
+								<textarea class="form-control otherfields" rows="3" id="customername otherfields"
+								placeholder="Enter customer name and address..."></textarea>
 							</div>
 						</div>
 					</div>
@@ -89,7 +88,7 @@
 						<div class="col-lg-12 fields">
 							<label for="subject">Subject:</label>
 							<div class="input-group">
-								<textarea class="form-control" rows="2" id="subject" name="subject"
+								<textarea class="form-control otherfields" rows="2" id="subject" name="subject"
 									placeholder="Add Subject to the Quotation..."></textarea>
 							</div>
 						</div>
@@ -101,7 +100,7 @@
 				<div class="col-lg-12">
 					<div class="row">
 						<div class="col-lg-8 fields">
-							<label for="materialno">Material No/Catalog Id:</label>
+							<label for="materialno">Catalogue Id:</label>
 							<div class="input-group">
 								<input type="text" id="materialno" class="form-control"
 									name="materialno" placeholder="Enter material no...">
@@ -215,8 +214,9 @@
 	<%
 		connection.close();
 	} catch (Exception e) {
-	e.printStackTrace();
-	out.println("Unable to connect to database.");
+		out.write("<br><br><br>Unable to connect to database. Please Turn on Database server and try again.");
+		out.write("<script type='text/javascript'> alert(\"Unable to connect to database. Please Turn on Database server and try again.\");</script> ");
+		e.printStackTrace();
 	}
 	%>
 	<!-- Product Search block ends here -->
@@ -236,8 +236,8 @@
 							<thead>
 								<tr>
 									<th>S No</th>
-									<th>Material No</th>
-									<th>Brand/Make</th>
+									<th>Catalogue Id</th>
+									<th>Make/Brand</th>
 									<th>Packing</th>
 									<th>Product Name</th>
 									<th>Consumer rate</th>
@@ -276,27 +276,38 @@
 					<!-- table for adding products in bill -->
 					<thead>
 						<tr>
-							<th>S no.</th>
-							<th style="width: 400px;">Item Name with Description</th>
-							<th>Make/Brand</th>
-							<th class="input-cols">Quantity</th>
-							<th class="input-cols">Unit Price</th>
-							<th style="width: 120px;"> Discount
-								<input type="checkbox" id="discount-enbl" value="discount-enbl" checked> </th>
-							<th class="input-cols">GST</th>
-							<th class="input-cols">Price (incl. GST)</th>
-							<th style="width: 120px;">HSN code</th>
+							<th><input type="checkbox" id="checkbox-enbl-all" value="allcols-enbl" checked> </th>
+							<th>S no.
+								<input type="checkbox" class="checkbox-enbl" value="sno-enbl" checked> </th>
+							<th>Catalogue Id
+								<input type="checkbox" class="checkbox-enbl" value="catalogid-enbl" checked> </th>
+							<th style="width: 350px;">Particulars
+								<input type="checkbox" class="checkbox-enbl" value="particulars-enbl" checked> </th>
+							<th>Make
+								<input type="checkbox" class="checkbox-enbl" value="make-enbl" checked> </th>
+							<th class="input-cols">Quantity
+								<input type="checkbox" class="checkbox-enbl" value="qty-enbl" checked> </th>
+							<th class="input-cols">Unit Price
+								<input type="checkbox" class="checkbox-enbl" value="unitprc-enbl" checked> </th>
+							<th class="input-cols"> Discount
+								<input type="checkbox" class="checkbox-enbl" value="discount-enbl" checked> </th>
+							<th style="width: 120px;">GST
+								<input type="checkbox" class="checkbox-enbl" value="gst-enbl" checked> </th>
+							<th class="input-cols">Price (incl. GST)
+								<input type="checkbox" class="checkbox-enbl" value="totalprc-enbl" checked> </th>
+							<th style="width: 120px;">HSN code
+								<input type="checkbox" class="checkbox-enbl" value="hsncode-enbl" checked> </th>
 							<th>remove item</th>
 						</tr>
 					</thead>
 					<tbody>
 						<tr>
-							<td id="billtbl-empty" colspan="10">Their are no products currently on the Bill.</td>
+							<td id="billtbl-empty" colspan="12">Their are no products currently on the Bill.</td>
 						</tr>
 					</tbody>
 					<tfoot>
 						<tr>
-							<th colspan="6"></th>
+							<th colspan="8"></th>
 							<th class="input-cols">Total Price</th>
 							<th id="billtotal" class="input-cols td-center">0.0</th>
 							<th colspan="2"></th>
@@ -305,50 +316,107 @@
 				</table>
 			</div>
 			<br>
+			<hr>
+			<br>
 			<div class="row">
-				<div class="col-lg-7">
-					<div class="form-group termsNcondition-div">
-						<label for="termsNcondition">Terms and Conditions:</label>
-						<textarea class="form-control" rows="5" id="termsNcondition"
-							placeholder="Add Terms and Conditions to your quotation..."></textarea>
+				<div class="col-lg-12">
+					<h4>Terms and Conditions:</h4>
+					<div class="form-group delivery-div">
+						<label for="delivery">1. Delivery: </label>
+						<textarea class="form-control otherfields" rows="2" id="delivery"
+							placeholder="Enter terms of delivery..."></textarea>
 					</div>
-				</div>
-				<div class="col-lg-5">
-					<br>
+					<div class="form-group payment-div">
+						<label for="payment">2. Payment:</label>
+						<textarea class="form-control otherfields" rows="2" id="payment"
+							placeholder="Enter terms of payment..."></textarea>
+					</div><br>
 					<div class="row">
-						<div class="col-lg-3"></div>
+						<div class="col-lg-2"></div>
+						<div class="col-lg-4">HDFC BANK </div>
+						<div class="col-lg-4">Trade House Indore</div>
+					</div>
+					<div class="row">
+						<div class="col-lg-2"></div>
+						<div class="col-lg-4"><b>A/c No: 00362320001974</b> </div>
+						<div class="col-lg-4"><b>IFS/RTGS Code No: HDFC0000036</b></div>
+					</div>
+					<br><br>
+					<p>3. All quoted prices are valid for 30 days from date of quotation.</p>
+					<p>4. Please reference your Kasliwal Brothers quotation number on your purchase orders.</p>
+					<p>5. Please mention your CST/TIN No./GST No. in your Purchase Order.</p>
+					<p>6. Please mention Quotation number on your Purchase Order and send it to on</p>
+					<div class="row">
+						<div class="col-lg-4"><input type="email" id=email1 class="form-control otherfields" name="email1" placeholder="Email 1..."></div>
+						<div class="col-lg-2" style="text-align: center;">and copy to </div>
+						<div class="col-lg-4"><input type="email" id=email2 class="form-control otherfields" name="email2"placeholder="Email 2..."></div>
+					</div>
+					<br>
+					<div class="form-group extranote-div">
+						<label for="extranote">Note:</label>
+						<input type="text" class="form-control" id="extranote" placeholder="Add note if any...">
+					</div>
+					<br><br>
+					<div class="row">
+						<div class="col-lg-2"></div>
+						<div class="col-lg-4">Subject to Indore Jurisdiction </div>
+						<div class="col-lg-4">FOR KASLIWAL BROTHERS</div>
+					</div>
+					<br><br>
+					<div class="row">
+						<div class="col-lg-2"></div>
+						<div class="col-lg-4">GST NO. 23AABFK2096H1ZJ </div>
+						<div class="col-lg-4">Authorized Signatory</div>
+					</div>
+					<br><br>
+				</div>
+			</div>
+			<br>
+			<hr>
+			<br><br>
+			<div class="row">
+				<div class="col-lg-4">
+					<div class="row">
+						<div class="col-lg-2"></div>
 						<div class="col-lg-2"><img class="export-icon" src="images/pdf.png"></div>
 						<div class="col-lg-6">
 							<button id="exportbtn-pdf" class="btn btn-dark exportbtn">export to pdf</button>
 							<img id="load-export-pdf" class="load-icon" src="images/load.gif">
 							<br><br>
 						</div>
+						<div class="col-lg-2"></div>
 					</div>
+				</div>
+				<div class="col-lg-4">
 					<div class="row">	
-						<div class="col-lg-3"></div>				
+						<div class="col-lg-2"></div>				
 						<div class="col-lg-2"><img class="export-icon" src="images/word.png"></div>
 						<div class="col-lg-6">
 							<button id="exportbtn-doc" class="btn btn-dark exportbtn">export to word</button>
 							<img id="load-export-doc" class="load-icon" src="images/load.gif">
 							<br><br>
 						</div>
+						<div class="col-lg-2"></div>	
 					</div>
+				</div>
+				<div class="col-lg-4">
 					<div class="row">
-						<div class="col-lg-3"></div>
+						<div class="col-lg-2"></div>	
 						<div class="col-lg-2"><img class="export-icon" src="images/excel.png"></div>
 						<div class="col-lg-6">
 							<button id="exportbtn-xls" class="btn btn-dark exportbtn">export to excel</button>							
 							<img id="load-export-xls" class="load-icon" src="images/load.gif">
 							<br><br>
 						</div>
+						<div class="col-lg-2"></div>	
 					</div>
-					<div class="row">
-						<div class="col-lg-2"></div>
-						<div class="col-lg-10">
-						<span id="exportbtn-errormsg" class="errormsg">*Some
-								inputs are missing or Quotation table is empty.</span> 
-						</div>
-					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-lg-12"></div>
+				<div class="col-lg-10">
+					<span id="exportbtn-errormsg" class="errormsg">
+					*Some required fields are missing or Quotation table is empty.</span> 
 				</div>
 			</div>
 		</div>

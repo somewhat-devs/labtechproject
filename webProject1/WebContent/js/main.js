@@ -145,6 +145,8 @@ $(document).ready(function() {
 			},
 			success: function(responseText) { 			
 				var resp = "";
+				if (responseText == "fail")
+					alert("Something went wrong!");
 				var table = $('#main-tbl').DataTable();	
 				table.clear().draw();
 				if (responseText[0][0] == "none") {
@@ -176,11 +178,11 @@ $(document).ready(function() {
                 }, 500);
 			},
 			fail: function(){
-				$(loadbtn).hide();
+				$('#load-result').hide();
 				alert("Something went wrong!");
 			},
 			error: function(){
-				$(loadbtn).hide();
+				$('#load-result').hide();
 				alert("Something went wrong!");
 			}
 		});
@@ -201,11 +203,16 @@ $(document).ready(function() {
 		
 		var pn = $(this).parent().parent().find('td:nth-child(5)');
 //		create table row with product id as rows id
-		var item_tr = "<tr id='billProd-" + mnid + "'>"+
+		var item_tr = "<tr id='billProd-" + mnid + "'>" +
+		
 //		S no
-		"<td class=\"td-center\">"+ n + "</td>" +			
+		"<td colspan=\"2\" class=\"td-center\">"+ n + "</td>" +
+		
+//		Catalog Id
+		"<td>"+ pn.prev().prev().prev().text() + "</td>" +
+		
 //		Item Name with Description
-		"<td>"+ pn.text() + "</td>" +			
+		"<td>"+ pn.text() + "</td>" +
 // 		Make/Brand
 		"<td>"+ pn.prev().prev().text() + "</td>" +											
 		
@@ -216,30 +223,34 @@ $(document).ready(function() {
 			"<input type=\"number\" id=\"qty-input\" class=\"form-control form-control-sm bill-inputs qtyNprc\" value=\"1\" min=\"1\"> " +
 			"<div class=\"input-group-append\">" +
 				"<button class=\"btn btn-sm btn-outline-secondary\" id=\"qty-incbtn\">+</button> </div>" +
-		"</div></td>" +																		
+		"</div></td>" ;	
+		
 //		price/rate editable field
-		"<td><input type=\"number\" class=\"form-control form-control-sm bill-inputs qtyNprc\" value=\""+ 
-		( ($.isNumeric(pn.next().text())) ? pn.next().text() : 0 ) +"\"></td>" ;										// Price/Rate
+		var prc = pn.next().text();
+		var prc2 = parseInt(prc.split(",").join(""));
+		if (Number.isInteger(prc2)) 
+			prc = prc2;
+		else
+			prc = 0;
+		item_tr += "<td><input type=\"number\" class=\"form-control form-control-sm bill-inputs qtyNprc\" value=\""+ 
+					prc +"\"></td>" +							
+
 //		discount editable field
-		if ($('#discount-enbl').prop('checked')) {
-			item_tr += "<td><div class=\"billinput-divs\">" +
+		"<td><div class=\"billinput-divs\">" +
 			"<input type=\"number\" class=\"form-control form-control-sm bill-inputs percent\" value=\"0\" min=\"0\" max=\"100\">"+ 
 			"<label class=\"billinput-labels\" for=\"bill-input-disc\">%</label>" +
-			"</div></td>" ;	
-		} else {
-			item_tr += "<td style=\"background-color: rgb(233, 236, 239);\"><div class=\"billinput-divs\">" +
-			"<input type=\"number\" class=\"form-control form-control-sm bill-inputs percent\" value=\"0\" min=\"0\" max=\"100\" disabled=\"\">"+ 
-			"<label class=\"billinput-labels\" for=\"bill-input-disc\">%</label>" +
-			"</div></td>" ;
-		}
+			"</div></td>" +
+			
 //		gst rate editable field
-		item_tr += "<td><div class=\"billinput-divs\">" +
+		"<td><div class=\"billinput-divs\">" +
 		"<input type=\"number\" class=\"form-control form-control-sm bill-inputs percent\" value=\""+ 
 		( ($.isNumeric(pn.next().next().text())) ? pn.next().next().text() : 0 ) +"\" min=\"0\" max=\"100\">" + 
 		"<label class=\"billinput-labels\" for=\"bill-input-gst\">%</label>" +
 		"</div></td>" +		
+		
 //		Total price incl. discount and gst for each price
 		"<td class=\"td-center\">0.0</td>" +	
+		
 //		hsncode editable field
 		"<td><input type=\"text\" class=\"form-control form-control-sm\" value=\""+ pn.next().next().next().text() +"\"></td>" +
 //		remove button for each product to delete it from bill table
@@ -247,31 +258,32 @@ $(document).ready(function() {
 		
 		$('#billtbl-empty').hide();
 		$('#bill-tbl tbody').append(item_tr);
+		updtdisability(mnid);
 		$('#billtotal').text((parseFloat($('#billtotal').text()) + addprodtotal(mnid)).toFixed(2));
 	});
-	
+		
 //	function to calculate total of 1 product which is to be added.
 	function addprodtotal(id){
 		var tr = $('#billProd-' +id+ ' td');
-		var prc = $(tr[4]).find('input').val();
-		var qty = $(tr[3]).find('input').val();
+		var prc = $(tr[5]).find('input').val();
+		var qty = $(tr[4]).find('input').val();
 		var p1,p2,p3;
-		if (($('#discount-enbl').prop('checked'))) {
+		if (($('.checkbox-enbl[value="discount-enbl"]').prop('checked'))) {
 			p1 = prc * qty;
-			p2 = p1  - (p1  * ($(tr[5]).find('input').val()/100));
-			p3 = p2  + (p2  * ($(tr[6]).find('input').val()/100));
+			p2 = p1  - (p1  * ($(tr[6]).find('input').val()/100));
+			p3 = p2  + (p2  * ($(tr[7]).find('input').val()/100));
 		} else {
 			p1 = prc * qty;
-			p3 = p1  + (p1  * ($(tr[6]).find('input').val()/100));
+			p3 = p1  + (p1  * ($(tr[7]).find('input').val()/100));
 		}
-		$(tr[7]).text((p3).toFixed(2));
+		$(tr[8]).text((p3).toFixed(2));
 		return p3;
 	}
 	
 //	function to update total of all products of the quotation
 	function updtprodtotal(){
 		var billtotal = 0;
-		$('#bill-tbl tbody tr').not(':first').each(function(i,e){
+		$('#bill-tbl tbody tr:not(:first)').each(function(i,e){
 			var id = $(e).attr("id");
 			id = id.substring(id.indexOf('-')+1);
 			billtotal += addprodtotal(id);
@@ -279,6 +291,63 @@ $(document).ready(function() {
 		$('#billtotal').text((billtotal).toFixed(2));
 	}
 
+//	function to implement disability of td of product row of given id
+	function updtdisability(id){
+		$('#billProd-'+id+' td:not(:last)').each(function(i,e){
+			if (i==0 || i==1 || i==2 || i==3 || i==8){
+                if ($($('.checkbox-enbl')[i]).prop('checked')){
+                    $(e).css('background','#fbfbfb');
+                } else {
+                    $(e).css('background','#e9ecef');
+                }
+            } else if (i==6) {
+				updtprodtotal();
+				if ($($('.checkbox-enbl')[i]).prop('checked')){
+		            $(e).css('background','#fbfbfb');
+		            $(e).find('input').removeAttr("disabled");
+		            $(e).find('button').removeAttr("disabled");
+		        } else {
+		            $(e).css('background','#e9ecef');
+		            $(e).find('input').prop('disabled', "true");
+		            $(e).find('button').prop('disabled', "true");
+		        }
+			} else {
+                if ($($('.checkbox-enbl')[i]).prop('checked')){
+                    $(e).css('background','#fbfbfb');
+                    $(e).find('input').removeAttr("disabled");
+                    $(e).find('button').removeAttr("disabled");
+                } else {
+                    $(e).css('background','#e9ecef');
+                    $(e).find('input').prop('disabled', "true");
+                    $(e).find('button').prop('disabled', "true");
+                }
+            }	
+		});
+	}
+	
+//	event raised if any bill-tbl header checkboxes are checked / unchecked
+	$('#checkbox-enbl-all').on('change', function(){
+		if ($('#checkbox-enbl-all').prop('checked')){
+			for (var i=0; i<10; i++){
+				$($('.checkbox-enbl')[i]).prop('checked', true);				
+			}	
+			$('#bill-tbl tbody tr:not(:first)').each(function(i,e){
+				var id = $(e).attr("id");
+				id = id.substring(id.indexOf('-')+1);
+				updtdisability(id);
+			});
+		}
+	});
+	
+	$('.checkbox-enbl').on('change', function(){
+		$('#checkbox-enbl-all').prop('checked', false);
+		$('#bill-tbl tbody tr:not(:first)').each(function(i,e){
+			var id = $(e).attr("id");
+			id = id.substring(id.indexOf('-')+1);
+			updtdisability(id);
+		});
+	});
+	
 //	implementation for remove button of each product in bill table
 	$(document).on("click", '.rem-btn', function() { 
 		$(this).parent().parent().nextAll().each(function(i, e){
@@ -312,7 +381,8 @@ $(document).ready(function() {
 
 //	quantity and price field validation, must be numeric
 	$(document).on("change", '.bill-inputs.qtyNprc', function() {
-		if ( !$.isNumeric($(this).val()) && !$(this).hasClass('invalid'))	$(this).addClass('invalid');
+		if ( !$.isNumeric($(this).val()) && !$(this).hasClass('invalid'))	
+			$(this).addClass('invalid');
 		else {
 			$(this).removeClass('invalid');
 			updtprodtotal();
@@ -329,24 +399,8 @@ $(document).ready(function() {
 		}
 	});
 	
-//	discount column enable/disable change events
-	$('#discount-enbl').on('change', function(){
-		if (!($(this).prop('checked'))) {
-			$('#bill-tbl tbody td:nth-child(6)').each(function(i,e){
-			    $(e).css('background-color',"#e9ecef");
-			    $(e).find('input').prop('disabled', "true");
-			});
-		} else {
-			$('#bill-tbl tbody td:nth-child(6)').each(function(i,e){
-			    $(e).css('background-color',"#fff");
-			    $(e).find('input').removeAttr("disabled");
-			});
-		}
-		updtprodtotal();
-	});
-	
 //	implementing validation for quotationno, customername, subject, termsNcondition 
-	$('#quotationno, #customername, #subject, #termsNcondition').on('change', function() {
+	$('.otherfields').on('change', function() {
 		if ($(this).val() == "")
 			$(this).addClass('invalid');
 		else
@@ -357,7 +411,7 @@ $(document).ready(function() {
 	$('.exportbtn').click(function(){
 //		validation of all textfields present in bill table for each product
 		var invalidFlag = 0;
-		$(['#quotationno', '#customername', '#subject', '#termsNcondition']).each(function(i,e){
+		$('.otherfields').each(function(i,e){
 			if ($(e).val() == ""){
 				$(e).addClass('invalid');
 				invalidFlag = 1;
@@ -382,29 +436,34 @@ $(document).ready(function() {
 		updtprodtotal();
 //		generating json to send to export service
 		var billProdList = [], otherfields = [];
-		$(['#quotationno', '#customername', '#subject', '#termsNcondition']).each(function(i,e){
-			otherfields.push($(e).val());
+		$('.otherfields').each(function(i,e){
+			otherfields.push([$(e).val()]);
 		});
+		otherfields.push([$('#extranote').val()]);
+		otherfields.push([$('#billtotal').text()]);
 		
-		if ($('#discount-enbl').prop('checked'))
-			otherfields.push("1");
-		else
-			otherfields.push("0");
+		var checkboxenbl_arr = [];	var tblsize = 0;
+		$('.checkbox-enbl').each(function(i,e){
+			if ($(e).prop('checked')) {
+				checkboxenbl_arr.push("1");
+				tblsize++;
+			}
+			else
+				checkboxenbl_arr.push("0");
+		});		
+		otherfields.push([tblsize.toString()]);
+		otherfields.push(checkboxenbl_arr);
 		
-		otherfields.push($('#billtotal').text());
-		
-		$('#bill-tbl tbody tr').not(':first').each(function(i,e){ 
+		$('#bill-tbl tbody tr:not(:first)').each(function(i,e){ 
 		    var temp = [];
 		    $(e).children().each(function(i,e){
-		        if (i==0 || i==1 || i==2 || i==7) 					
-		        	temp.push($(e).html());
-		        if (i==3 || i==4 || i==6 || i==8)			
-		        	temp.push($(e).find('input').val());
-		        if (i==5)
-		        	if ($('#discount-enbl').prop('checked'))
-		        		temp.push($(e).find('input').val());
-		        	else
-		        		temp.push("NULL");
+		    	if (checkboxenbl_arr[i] == "1") {
+		    		if (i==0 || i==1 || i==2 || i==3 || i==8) 
+			        	temp.push($(e).html());
+			        if (i==4 || i==5 || i==6 || i==7 || i==9)
+			        	temp.push($(e).find('input').val());
+		    	} else
+	        		temp.push("NULL"); 		        
 		    });
 		    billProdList.push(temp);
 		});
@@ -417,6 +476,7 @@ $(document).ready(function() {
 			var action = 'exportToExcel';  var loadbtn = '#load-export-xls';
 		}
 		$(loadbtn).show();
+		
 		$.ajax({
 			url: 'ExportService',
 			type: 'POST',
@@ -427,8 +487,13 @@ $(document).ready(function() {
 				action: action
 			},
 			success: function(data) {
-				$(loadbtn).hide();
-				alert("File is saved at Desktop!");
+				if (data == "fail") {
+					$(loadbtn).hide();
+					alert("Something went wrong!");
+				} else {
+					$(loadbtn).hide();
+					alert("File is saved at Desktop!");
+				}
 			},
 			fail: function(){
 				$(loadbtn).hide();
@@ -524,15 +589,17 @@ $(document).ready(function() {
 					$('.txtfld-tbl').find('td input').each(function(i,e){ $(e).val(""); });	
 					$('.txtfld-tbl tr').find('textarea').val("");
 					alert("Product created succussfully!");
-				} else
+				} else	{				
+					$('#load-create').hide();
 					alert("Something went wrong!");
+				}
 			},
 			fail: function(){
-				$(loadbtn).hide();
+				$('#load-create').hide();
 				alert("Something went wrong!");
 			},
 			error: function(){
-				$(loadbtn).hide();
+				$('#load-create').hide();
 				alert("Something went wrong!");
 			}
 		});

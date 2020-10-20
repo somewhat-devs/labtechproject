@@ -7,6 +7,7 @@
 <head>
 <meta charset="ISO-8859-1">
 <title>Create new product</title>
+<link rel="icon" href="images/webicon.png">
 <script src="js/jquery-3.5.0.min.js"></script>
 <script type="text/javascript" src="js/datatables.min.js"></script>
 <script type="text/javascript" src="js/main.js"></script>

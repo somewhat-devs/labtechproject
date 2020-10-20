@@ -2,8 +2,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -33,9 +31,16 @@ import com.google.gson.Gson;
 import com.itextpdf.io.image.ImageData;
 import com.itextpdf.io.image.ImageDataFactory;
 import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfPage;
 import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.kernel.pdf.canvas.PdfCanvas;
 import com.itextpdf.kernel.colors.DeviceRgb;
+import com.itextpdf.kernel.events.Event;
+import com.itextpdf.kernel.events.IEventHandler;
+import com.itextpdf.kernel.events.PdfDocumentEvent;
 import com.itextpdf.kernel.geom.PageSize;
+import com.itextpdf.kernel.geom.Rectangle;
+import com.itextpdf.layout.Canvas;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.borders.SolidBorder;
 import com.itextpdf.layout.element.*;
@@ -49,99 +54,135 @@ public class ExportService extends HttpServlet {
         super();
     }
 
+	protected class HeadImg implements IEventHandler {
+		@Override
+		public void handleEvent(Event event) {
+	        try {
+				String filePath = getServletContext().getRealPath("/");
+				File imgFile = new File(filePath + "/images/logo.jpg");			
+				PdfDocumentEvent docEvent = (PdfDocumentEvent) event;
+				PdfDocument pdf = docEvent.getDocument();        
+				PdfPage page = docEvent.getPage();
+				int pageNumber = pdf.getPageNumber(page);
+		        Rectangle pageSize = page.getPageSize();
+		        PdfCanvas pdfCanvas = new PdfCanvas(page.newContentStreamBefore(), page.getResources(), pdf);
+		        
+				FileInputStream fis = new FileInputStream(imgFile);
+				byte[] bytes = IOUtils.toByteArray(fis);
+				ImageData data = ImageDataFactory.create(bytes);
+				pdfCanvas.addImage(data, 37.5F, 730F, 520, false);
+				
+		        Canvas canvas = new Canvas(pdfCanvas, pdf, pageSize);
+				float x = (pageSize.getLeft() + pageSize.getRight()) / 2;
+		        float y = pageSize.getBottom() + 15;
+		        canvas.setFontSize(8f);
+		        canvas.showTextAligned(
+		            "page "+pageNumber, x, y, TextAlignment.CENTER);
+		        canvas.close();
+				pdfCanvas.release();
+				
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		
+	}
+    
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
 		String action = request.getParameter("action");
-		String[] tblheads = { "S. No.", "Item name with description", "Make", "Qty.", "Unit Price",	"Discount", "GST", "Price \n(incl. GST)", "HSN Code" };
+		String[] tblheads = { "S. No.", "Catalogue Id", "Particulars", "Make", "Qty.", "Unit Price",	"Discount", "GST", "Price \n(incl. GST)", "HSN Code" };
 		String prodlist[][] = new Gson().fromJson(request.getParameter("prodlist"), String[][].class);
-		String otherfields[] = new Gson().fromJson(request.getParameter("otherfields"), String[].class);
-		int discount = Integer.parseInt(otherfields[4]);
+		String otherfields[][] = new Gson().fromJson(request.getParameter("otherfields"), String[][].class);
+		String[] checkboxenbl_arr = otherfields[10];
+		int tblsize = Integer.valueOf(otherfields[9][0]);
+        String filePath = getServletContext().getRealPath("/");
+        File imgFile = new File(filePath + "/images/logo.jpg");	
 				
 		SimpleDateFormat formatter = new SimpleDateFormat("ddMMyyyy-HHmmss");
 		Date date = new Date();
-		String filename = "Quotation-" + formatter.format(date) ;
+		String filename = otherfields[0][0];
+		filename = filename.replaceAll("[\\/?<>.\"]", " ") ;
 		File desktop = new File(System.getProperty("user.home"), "/Desktop");
-		String url = request.getRequestURL().toString();
-		URL imFile = new URL(url.substring(0, url.lastIndexOf('/')) + "/images/logo.jpg");
 				
 		if (action.equals("exportToPDF")) {
 			try {
 				
 			    PdfWriter writer = new PdfWriter(desktop+"\\"+filename+".pdf");
 				PdfDocument pdf = new PdfDocument(writer);
+				pdf.addEventHandler(PdfDocumentEvent.START_PAGE, new HeadImg());
+				
 				pdf.addNewPage();
 				pdf.getDocumentInfo().setCreator("Kasliwal Brothers Pharmaceuticals");
 				pdf.getDocumentInfo().setAuthor("Kasliwal Brothers Pharmaceuticals");
 				pdf.getDocumentInfo().addCreationDate();
 				Document document = new Document(pdf, new PageSize(PageSize.A4));
-
-				ImageData data = ImageDataFactory.create(imFile);
-				Image image = new Image(data);
-				image.setAutoScale(true);
-				document.add(image);
-
-				document.add(new Paragraph(" "));
-				document.add(new Paragraph(" "));
-				Text text = new Text("Quotation  No: "+ otherfields[0]).setFontSize(10);
-				document.add(new Paragraph(text));
-				
-				text = new Text("Customer Name: "+ otherfields[1]).setFontSize(10);
-				document.add(new Paragraph(text));
-				
-				text = new Text("Subject: "+ otherfields[2]).setFontSize(10);
-				document.add(new Paragraph(text));
+				document.setTopMargin(130);
 				
 				formatter = new SimpleDateFormat("dd MMMM yyyy");
-				text = new Text("Quotations: Date : " + formatter.format(date)).setFontSize(10);
+				
+				Table table1 = new Table(new float[] {5f, 5f});
+				table1.setWidth(UnitValue.createPercentValue(100));
+				table1.addCell(new Cell().add(new Paragraph("Quotation  No: "+ otherfields[0][0]))
+						.setTextAlignment(TextAlignment.LEFT)
+						.setFontSize(10)
+						.setBorder(new SolidBorder(new DeviceRgb(255, 255, 255), 0F)));
+				table1.addCell(new Cell().add(new Paragraph(formatter.format(date)))
+						.setTextAlignment(TextAlignment.RIGHT)
+						.setFontSize(10)
+						.setBorder(new SolidBorder(new DeviceRgb(255, 255, 255), 0F)));
+				document.add(table1);
+				
+				Text text = new Text("To: \n"+ otherfields[1][0]).setFontSize(10);
 				document.add(new Paragraph(text));
-
-				document.add(new Paragraph(" "));
+				
+				text = new Text("Subject: "+ otherfields[2][0]).setFontSize(10);
+				document.add(new Paragraph(text));
+				
 				Paragraph paragraph = new Paragraph();
 				paragraph.add(new Text("Dear Sir,\n").setFontSize(10));
-				paragraph.add(new Text("In response to your enquiry, we are pleased to offer our rates as under:-\n")
+				paragraph.add(new Text("In response to your enquiry, we are pleased to offer our rates as under:-")
 						.setFontSize(10));
 				document.add(paragraph);
-
-				float[] pointColumnWidths;
-				if (discount == 1) 
-					pointColumnWidths = new float[]{ 5, 5, 5, 5, 5, 5, 5, 5, 5 };
-				else
-					pointColumnWidths = new float[]{ 5, 5, 5, 5, 5, 5, 5, 5 };
+				
+				int tblcol = 0;
+				float[] pointColumnWidths = new float[tblsize];
+				for (int i=0; i<10; i++) {
+					if (checkboxenbl_arr[i].equals("1")) {
+						pointColumnWidths[tblcol] = 5F;
+						tblcol++;
+					}
+				}
 					
 				Table table = new Table(pointColumnWidths);
 				table.setWidth(UnitValue.createPercentValue(100));
-				table.setMarginTop(30);
+				table.setMarginTop(10);
 
-				for (int i = 0; i < 9; i++) {
-					if (i==5) 
-						if (discount == 0) 
-							continue;
+				for (int i = 0; i < 10; i++) {
+					if (checkboxenbl_arr[i].equals("0")) 
+						continue;
 					
 					table.addCell(new Cell().add(new Paragraph(tblheads[i]))
 							.setTextAlignment(TextAlignment.CENTER)
 							.setVerticalAlignment(VerticalAlignment.MIDDLE)
 							.setFontSize(10)
-							.setFontColor(new DeviceRgb(0, 112, 192))
+							.setBold()
 							.setPaddings(5, 2, 5, 2)
-							.setBackgroundColor(new DeviceRgb(220, 233, 241))
 							.setBorder(new SolidBorder(new DeviceRgb(216, 216, 216), 1F)));
 				}
 
 				for (int i = 0; i < prodlist.length; i++) {
-					for (int j = 0; j < 9; j++) {
-						if (j == 1) {
+					for (int j = 0; j < 10; j++) {
+						if (checkboxenbl_arr[j].equals("0")) 
+							continue;
+						if (j == 2) {
 							table.addCell(new Cell().add(new Paragraph(prodlist[i][j]))
 									.setFontSize(10)
 									.setPaddings(5, 2, 5, 2)
 									.setBorder(new SolidBorder(new DeviceRgb(216, 216, 216), 1F)));
 							continue;
 						} 
-						if (j == 5) {
-							if (discount == 0) {
-								continue;
-							}
-						}	
-						if (j==5 || j==6) {
+						if (j==6 || j==7) {
 							table.addCell(new Cell().add(new Paragraph(prodlist[i][j]+"%"))
 									.setFontSize(10)
 									.setPaddings(5, 2, 5, 2)
@@ -156,52 +197,84 @@ public class ExportService extends HttpServlet {
 								.setBorder(new SolidBorder(new DeviceRgb(216, 216, 216), 1F)));
 					}
 				}
-				for (int j = 0; j < 8; j++) {
-					if (j==4) {
-						table.addCell(new Cell(1, 2).add(new Paragraph("Total Price: "))
-								.setFontSize(10)
-								.setPaddings(5, 2, 5, 2)
-								.setTextAlignment(TextAlignment.CENTER)
-								.setBorder(new SolidBorder(new DeviceRgb(255, 255, 255), 1F)));
+				for (int j = 0; j < 10; j++) {
+					if (checkboxenbl_arr[j].equals("0")) 
 						continue;
-					}
 					if (j==5) {
-						if (discount == 1) {
-							table.addCell(new Cell().add(new Paragraph(""))
-									.setBorder(new SolidBorder(new DeviceRgb(255, 255, 255), 1F)));	
-							continue;
-						} else {
-							continue;
-						}
-					}
-					if (j==6) {
-						table.addCell(new Cell().add(new Paragraph(String.valueOf(otherfields[5])))
+						table.addCell(new Cell(1,2).add(new Paragraph("Total Price: "))
 								.setFontSize(10)
 								.setPaddings(5, 2, 5, 2)
 								.setTextAlignment(TextAlignment.CENTER)
 								.setBorder(new SolidBorder(new DeviceRgb(255, 255, 255), 1F)));
-						continue;
+						if (checkboxenbl_arr[6].equals("1")) {
+							table.addCell(new Cell().add(new Paragraph(""))
+									.setBorder(new SolidBorder(new DeviceRgb(255, 255, 255), 1F)));
+						}
+						table.addCell(new Cell().add(new Paragraph(String.valueOf(otherfields[8][0])))
+								.setFontSize(10)
+								.setPaddings(5, 2, 5, 2)
+								.setTextAlignment(TextAlignment.CENTER)
+								.setBorder(new SolidBorder(new DeviceRgb(255, 255, 255), 1F)));
+						break;
 					}
-					table.addCell(new Cell().add(new Paragraph(""))
-							.setBorder(new SolidBorder(new DeviceRgb(255, 255, 255), 1F)));			
+					if (j<5) {
+						table.addCell(new Cell().add(new Paragraph(""))
+								.setBorder(new SolidBorder(new DeviceRgb(255, 255, 255), 1F)));
+					}	
 				}
 				
 				document.add(table);
 				
-				document.add(new Paragraph(" "));
-				document.add(new Paragraph(" "));
 				paragraph = new Paragraph();
-				paragraph.add(new Text("Terms and Conditions : ").setFontSize(10));
+				paragraph.add(new Text("\n"));
+				paragraph.add(new Text("Terms and Conditions : ").setFontSize(10).setBold());				
 				document.add(paragraph);
 				paragraph = new Paragraph();
-				paragraph.add(new Text(otherfields[3]).setFontSize(10));
+				paragraph.addTabStops(new TabStop(100f, TabAlignment.LEFT));
+				paragraph.add(new Text("1. Delivery: ").setFontSize(10).setBold());
+				paragraph.add(new Text(otherfields[3][0]+ "\n").setFontSize(10));
+				paragraph.add(new Text("2. Payment: ").setFontSize(10).setBold());
+				paragraph.add(new Text(otherfields[4][0]+ "\n\n").setFontSize(10));
+				paragraph.add(new Tab());
+				paragraph.add(new Text("HDFC BANK").setFontSize(10));
+				paragraph.add(new Tab()); paragraph.add(new Tab()); paragraph.add(new Tab());
+				paragraph.add(new Text("Trade House Indore \n").setFontSize(10));
+				paragraph.add(new Tab());
+				paragraph.add(new Text("A/c No: 00362320001974").setFontSize(10).setBold());
+				paragraph.add(new Tab()); paragraph.add(new Tab());
+				paragraph.add(new Text("IFS/RTGS Code No: HDFC0000036 \n\n").setFontSize(10).setBold());
+				
+				paragraph.add(new Text("3. All quoted prices are valid for 30 days from date of quotation. \n").setFontSize(10));
+				paragraph.add(new Text("4. Please reference your Kasliwal Brothers quotation number on your purchase orders. \n").setFontSize(10));
+				paragraph.add(new Text("5. Please mention your CST/TIN No./GST No. in your Purchase Order. \n").setFontSize(10));
+				paragraph.add(new Text("6. Please mention Quotation number on your Purchase Order and send it to on ").setFontSize(10));
+				paragraph.add(new Text(otherfields[5][0]).setFontSize(10).setBold());
+				paragraph.add(new Text(" and copy to ").setFontSize(10));
+				paragraph.add(new Text(otherfields[6][0]+ "\n\n").setFontSize(10).setBold());
+
+				if ( !(otherfields[7][0].equals("")) ) {
+					paragraph.add(new Text("Note: "+ otherfields[7][0]+" \n\n").setFontSize(10));
+				}
+				
+				paragraph.add(new Tab());
+				paragraph.add(new Text("Subject to Indore Jurisdiction").setFontSize(10));
+				paragraph.add(new Tab()); paragraph.add(new Tab());
+				paragraph.add(new Text("FOR KASLIWAL BROTHERS, \n\n\n").setFontSize(10));
+				paragraph.add(new Tab());
+				paragraph.add(new Text("GST NO. 23AABFK2096H1Z").setFontSize(10));
+				paragraph.add(new Tab()); paragraph.add(new Tab());
+				paragraph.add(new Text("Authorized Signatory \n\n").setFontSize(10));
+				
 				document.add(paragraph);
 				
 				document.close();
+				response.getWriter().write("success");
 
 			} catch (IOException e) {
+				response.getWriter().write("fail");
 				e.printStackTrace();
 			} catch (Exception e) {
+				response.getWriter().write("fail");
 				e.printStackTrace();
 			}
 		}
@@ -213,10 +286,10 @@ public class ExportService extends HttpServlet {
 		        HSSFSheet sheet = workbook.createSheet();
 		        int rowcount = 7;
 		        
-				InputStream is = imFile.openStream();
-				byte[] bytes = IOUtils.toByteArray(is);
+		        FileInputStream fis = new FileInputStream(imgFile);
+				byte[] bytes = IOUtils.toByteArray(fis);
 				int pictureIdx = workbook.addPicture(bytes, Workbook.PICTURE_TYPE_JPEG);
-				is.close();
+				fis.close();
 				CreationHelper helper = workbook.getCreationHelper();
 				Drawing<?> drawing = sheet.createDrawingPatriarch();
 				ClientAnchor anchor = helper.createClientAnchor();
@@ -230,32 +303,28 @@ public class ExportService extends HttpServlet {
 		        style.setVerticalAlignment(org.apache.poi.ss.usermodel.VerticalAlignment.CENTER);
 		        style.setFont(font);
 		        
+		        formatter = new SimpleDateFormat("dd MMMM yyyy");
 		        HSSFRow rowint = sheet.createRow(rowcount);
 		        rowint.setHeightInPoints((short) 15);
 		        HSSFCell cellint = rowint.createCell(1);
-		        cellint.setCellValue(new HSSFRichTextString("Quotation  No: "+otherfields[0]));
+		        cellint.setCellValue(new HSSFRichTextString("Quotation  No: "+otherfields[0][0]));
+		        cellint.setCellStyle(style);
+		        cellint = rowint.createCell(5);
+		        cellint.setCellValue(new HSSFRichTextString(formatter.format(date)));
 		        cellint.setCellStyle(style);
 		        ++rowcount;
 
 		        rowint = sheet.createRow(rowcount);
 		        rowint.setHeightInPoints((short) 15);
 		        cellint = rowint.createCell(1);
-		        cellint.setCellValue(new HSSFRichTextString("Customer Name: "+ otherfields[1]));
+		        cellint.setCellValue(new HSSFRichTextString("To: "+ otherfields[1][0]));
 		        cellint.setCellStyle(style);
 		        ++rowcount;
 
 		        rowint = sheet.createRow(rowcount);
 		        rowint.setHeightInPoints((short) 15);
 		        cellint = rowint.createCell(1);
-		        cellint.setCellValue(new HSSFRichTextString("Subject: "+ otherfields[2]));
-		        cellint.setCellStyle(style);
-		        ++rowcount;
-		        
-		        rowint = sheet.createRow(rowcount);
-		        rowint.setHeightInPoints((short) 15);
-		        cellint = rowint.createCell(1);
-		        formatter = new SimpleDateFormat("dd MMMM yyyy");
-		        cellint.setCellValue(new HSSFRichTextString("Quotations: Date : " + formatter.format(date)));
+		        cellint.setCellValue(new HSSFRichTextString("Subject: "+ otherfields[2][0]));
 		        cellint.setCellStyle(style);
 		        rowcount += 2;
 		        		        
@@ -286,153 +355,207 @@ public class ExportService extends HttpServlet {
 		        
 		        HSSFRow rowhead = sheet.createRow(rowcount);
 		        rowhead.setHeightInPoints((short) 15);
-				for (int i = 1; i < 10; i++) {
-					if (i==6) 
-						if (discount == 0) 
-							continue;
-					HSSFCell cellhead;
-					if (i==7 || i==8 || i==9) {
-						if (discount == 0)
-							cellhead = rowhead.createCell(i-1);
-						else
-							cellhead = rowhead.createCell(i);
-					} else {
-						cellhead = rowhead.createCell(i);
-					}
-					cellhead.setCellValue(new HSSFRichTextString(tblheads[(i-1)]));
+		        int tblcol = 1;
+				for (int i = 0; i < 10; i++) {
+					if (checkboxenbl_arr[i].equals("0")) 
+						continue;
+					
+					HSSFCell cellhead = rowhead.createCell(tblcol);
+					cellhead.setCellValue(new HSSFRichTextString(tblheads[i]));
 					cellhead.setCellStyle(stylehead);
+					tblcol++;
 				}
 		        ++rowcount;
 
-				if (discount == 0)
-					sheet.setColumnWidth((7), 18 * 256);	
-				else
-					sheet.setColumnWidth((8), 18 * 256);
-				
+		        int tpcell = 8, tnccell = 3; 
 				for (int i = 0; i < prodlist.length; i++) {
 					HSSFRow rowproduct = sheet.createRow(i+rowcount);
-					for (int j = 0; j < 9; j++) {
-						if (j==1) {
-							HSSFCell cellproduct = rowproduct.createCell(j+1);
+			        tblcol = 1;
+					for (int j = 0; j < 10; j++) {
+						if (checkboxenbl_arr[j].equals("0")) 
+							continue;
+						
+						if (j==2) {
+							HSSFCell cellproduct = rowproduct.createCell(tblcol);
 							cellproduct.setCellValue(new HSSFRichTextString(prodlist[i][j]));
 							cellproduct.setCellStyle(styleprodname);
-							sheet.setColumnWidth((j+1), 65 * 256);	
+							sheet.setColumnWidth(tblcol, 65 * 256);	
+							tnccell = tblcol;
+							++tblcol;
 							continue;
-						} if (j==2 || j==8) {							
-							HSSFCell cellproduct;
-							if (j==8) {
-								if (discount == 0)
-									cellproduct = rowproduct.createCell(j);
-								else
-									cellproduct = rowproduct.createCell(j+1);
-							} else 
-								cellproduct = rowproduct.createCell(j+1);
+						} if (j==1 || j==3 || j==9) {
+							HSSFCell cellproduct = rowproduct.createCell(tblcol);
 							cellproduct.setCellValue(new HSSFRichTextString(prodlist[i][j]));
 							cellproduct.setCellStyle(style);
-							sheet.setColumnWidth((j+1), 10 * 256);	
+							sheet.setColumnWidth(tblcol, 10 * 256);		
+							++tblcol;
 							continue;
-						} if (j==6 || j==7) {							
-							HSSFCell cellproduct; 
-							if (discount == 0)
-								cellproduct = rowproduct.createCell(j);
-							else
-								cellproduct = rowproduct.createCell(j+1);
-							if (j==6)
-								cellproduct.setCellValue(new HSSFRichTextString(prodlist[i][j]+"%"));
-							else
-								cellproduct.setCellValue(Double.valueOf(prodlist[i][j]));
+						} if (j==6 || j==7) {		
+							HSSFCell cellproduct = rowproduct.createCell(tblcol);
+							cellproduct.setCellValue(new HSSFRichTextString(prodlist[i][j]+"%"));
+							cellproduct.setCellStyle(style);	
+							++tblcol;
+							continue;
+						} if (j==8) {
+							HSSFCell cellproduct = rowproduct.createCell(tblcol);
+							cellproduct.setCellValue(Double.valueOf(prodlist[i][j]));
 							cellproduct.setCellStyle(style);
+							sheet.setColumnWidth(tblcol, 18 * 256);	
+							tpcell = tblcol;
+							++tblcol;
 							continue;
-						} if (j==5) {
-							if (discount == 0)
-								continue;
-							else {
-								HSSFCell cellproduct = rowproduct.createCell(j+1);
-								cellproduct.setCellValue(new HSSFRichTextString(prodlist[i][j]+"%"));
-								cellproduct.setCellStyle(style);
-								sheet.setColumnWidth((j+1), 12 * 256);
-								continue;
-							}
-								
-						}						
-						HSSFCell cellproduct = rowproduct.createCell(j+1);
+						}
+												
+						HSSFCell cellproduct = rowproduct.createCell(tblcol);
 						cellproduct.setCellValue(Double.valueOf(prodlist[i][j]));
 						cellproduct.setCellStyle(style);
-						sheet.setColumnWidth((j+1), 12 * 256);
+						sheet.setColumnWidth(tblcol, 12 * 256);	
+						++tblcol;
 					}
 				}
-				rowcount += prodlist.length;	int tpcell;
-				if (discount == 0)
-					tpcell = 6;
-				else
-					tpcell = 7;
+				rowcount += prodlist.length;
+				
 				rowint = sheet.createRow(rowcount);
 		        rowint.setHeightInPoints((short) 15);
-		        cellint = rowint.createCell(tpcell);
+		        cellint = rowint.createCell(tpcell-1);
 		        cellint.setCellValue(new HSSFRichTextString("Total Price "));
 		        cellint.setCellStyle(style);
-		        ++tpcell;
 		        cellint = rowint.createCell(tpcell);
-		        cellint.setCellValue(Double.valueOf(otherfields[5]));
+		        cellint.setCellValue(Double.valueOf(otherfields[8][0]));
 		        cellint.setCellStyle(style);								
 		        rowcount += 2;
+		        
+		        HSSFCellStyle stylefoot = workbook.createCellStyle();
+		        HSSFFont fontfoot = workbook.createFont();
+		        fontfoot.setBold(true);
+		        stylefoot.setFont(fontfoot);
 				
-		        HSSFRow rowtc1 = sheet.createRow(prodlist.length+rowcount);
-		        rowtc1.setHeightInPoints((short) 15);
-		        HSSFCell celltc11 = rowtc1.createCell(2);
-		        celltc11.setCellValue(new HSSFRichTextString("Terms and Conditions : "));
-		        celltc11.setCellStyle(style);
+		        HSSFRow rowtfoot = sheet.createRow(rowcount);
+		        rowtfoot.setHeightInPoints((short) 15);
+		        HSSFCell cellfoot = rowtfoot.createCell(tnccell);
+		        cellfoot.setCellValue(new HSSFRichTextString("Terms and Conditions : "));
+		        cellfoot.setCellStyle(stylefoot);
+		        rowcount+=2;
+		        
+		        rowtfoot = sheet.createRow(rowcount);
+		        cellfoot = rowtfoot.createCell(tnccell);
+		        cellfoot.setCellValue(new HSSFRichTextString("1. Delivery: "));
+		        cellfoot.setCellStyle(stylefoot);
 		        ++rowcount;
-		        HSSFRow rowtc2 = sheet.createRow(prodlist.length+rowcount);
-		        HSSFCell celltc12 = rowtc2.createCell(2);
-		        celltc12.setCellValue(new HSSFRichTextString(otherfields[3]));
-		        celltc12.setCellStyle(styleprodname);
+		        rowtfoot = sheet.createRow(rowcount);
+		        cellfoot = rowtfoot.createCell(tnccell);
+		        cellfoot.setCellValue(new HSSFRichTextString(otherfields[3][0]));
+		        cellfoot.setCellStyle(styleprodname);
+		        ++rowcount;
+		        rowtfoot = sheet.createRow(rowcount);
+		        cellfoot = rowtfoot.createCell(tnccell);
+		        cellfoot.setCellValue(new HSSFRichTextString("2. Payment: "));
+		        cellfoot.setCellStyle(stylefoot);
+		        ++rowcount;
+		        rowtfoot = sheet.createRow(rowcount);
+		        cellfoot = rowtfoot.createCell(tnccell);
+		        cellfoot.setCellValue(new HSSFRichTextString(otherfields[4][0]));
+		        cellfoot.setCellStyle(styleprodname);
+		        rowcount+=2;
+
+		        rowtfoot = sheet.createRow(rowcount);
+		        cellfoot = rowtfoot.createCell(tnccell);
+		        cellfoot.setCellValue(new HSSFRichTextString("HDFC BANK................................Trade House Indore"));
+		        cellfoot.setCellStyle(style);
+		        ++rowcount;
+		        rowtfoot = sheet.createRow(rowcount);
+		        cellfoot = rowtfoot.createCell(tnccell);
+		        cellfoot.setCellValue(new HSSFRichTextString("A/c No: 00362320001974..............IFS/RTGS Code No: HDFC0000036"));
+		        cellfoot.setCellStyle(style);
+		        rowcount+=2;
+		        
+		        rowtfoot = sheet.createRow(rowcount);
+		        cellfoot = rowtfoot.createCell(tnccell);
+		        cellfoot.setCellValue(new HSSFRichTextString("3. All quoted prices are valid for 30 days from date of quotation."));
+		        cellfoot.setCellStyle(styleprodname);
+		        ++rowcount;
+		        rowtfoot = sheet.createRow(rowcount);
+		        cellfoot = rowtfoot.createCell(tnccell);
+		        cellfoot.setCellValue(new HSSFRichTextString("4. Please reference your Kasliwal Brothers quotation number on your purchase orders."));
+		        cellfoot.setCellStyle(styleprodname);
+		        ++rowcount;
+		        rowtfoot = sheet.createRow(rowcount);
+		        cellfoot = rowtfoot.createCell(tnccell);
+		        cellfoot.setCellValue(new HSSFRichTextString("5. Please mention your CST/TIN No./GST No. in your Purchase Order."));
+		        cellfoot.setCellStyle(styleprodname);
+		        ++rowcount;
+		        rowtfoot = sheet.createRow(rowcount);
+		        cellfoot = rowtfoot.createCell(tnccell);
+		        cellfoot.setCellValue(new HSSFRichTextString("6. Please mention Quotation number on your Purchase Order and send it to on "+ otherfields[5][0]+ " and copy to "+ otherfields[6][0]));
+		        cellfoot.setCellStyle(styleprodname);
+		        rowcount+=1;
+
+		        if ( !(otherfields[7][0].equals("")) ) {
+		        	rowtfoot = sheet.createRow(rowcount);
+			        cellfoot = rowtfoot.createCell(tnccell);
+			        cellfoot.setCellValue(new HSSFRichTextString("Note: "+ otherfields[7][0]));
+			        cellfoot.setCellStyle(styleprodname);
+			        ++rowcount;
+				}
+		        rowcount+=1;
+		        
+		        rowtfoot = sheet.createRow(rowcount);
+		        cellfoot = rowtfoot.createCell(tnccell);
+		        cellfoot.setCellValue(new HSSFRichTextString("Subject to Indore Jurisdiction......................FOR KASLIWAL BROTHERS,"));
+		        cellfoot.setCellStyle(style);
+		        ++rowcount;
+		        rowtfoot = sheet.createRow(rowcount);
+		        cellfoot = rowtfoot.createCell(tnccell);
+		        cellfoot.setCellValue(new HSSFRichTextString("GST NO. 23AABFK2096H1Z..............Authorized Signatory"));
+		        cellfoot.setCellStyle(style);
+		        
 		        		        
 		        File xlsfile = new File(desktop+"\\"+filename+".xls");
 		        workbook.write(xlsfile); 
 		        workbook.close();
+				response.getWriter().write("success");
 		        			
 			} catch (Exception e) {
+				response.getWriter().write("fail");
 				e.printStackTrace();
 			}
 		}
-		
+
 		if (action.equals("exportToWord")) {
 			try {
 				
 				XWPFDocument doc = new XWPFDocument(); 
 				XWPFParagraph par = doc.createParagraph();
 				XWPFRun run = par.createRun();
-		        String filePath = getServletContext().getRealPath("/");
-				File imgFile = new File(filePath +"/images/logo.jpg");
 				run.addPicture(new FileInputStream(imgFile), XWPFDocument.PICTURE_TYPE_JPEG, "logo.jpg", Units.pixelToEMU(600), Units.pixelToEMU(100)); 
 				
 	            XWPFParagraph paragraph = doc.createParagraph();  
 	            run = paragraph.createRun(); 
+	            formatter = new SimpleDateFormat("dd MMMM yyyy");
 	            
 	            run.addBreak();
-				run.setText("Quotation  No: "+ otherfields[0]); 
+				run.setText("Quotation  No: "+ otherfields[0][0]);
+				run.addTab(); run.addTab(); run.addTab(); run.addTab(); run.addTab(); run.addTab(); 
+				run.setText(formatter.format(date));
 	            run.addBreak(); run.addBreak();
 				
-				run.setText("Customer Name: "+ otherfields[1]); 
+				run.setText("To: ");
+				run.addBreak();
+				run.setText(otherfields[1][0]); 
 	            run.addBreak(); run.addBreak();
 				
-				run.setText("Subject: "+ otherfields[2]); 
+				run.setText("Subject: "+ otherfields[2][0]); 
 	            run.addBreak(); run.addBreak();
-	            
-	    		formatter = new SimpleDateFormat("dd MMMM yyyy");
-				run.setText("Quotations: Date : "+formatter.format(date));
-				run.addBreak(); run.addBreak();
 				
 				run.setText("Dear Sir,\n");
 				run.addBreak();
 				run.setText("In response to your enquiry, we are pleased to offer our rates as under:-\n");
-				run.addBreak(); run.addBreak();
+				run.addBreak();
 				
-				int colind;
+				int tblcol = 1, tpcell = 8;
 				XWPFTable tab = doc.createTable(1, 1);
 	            XWPFTableRow row = tab.getRow(0); 
-	            for (int i = 0; i < 9; i++) {
+	            for (int i = 0; i < 10; i++) {
 	            	if (i==0) {
 	            		XWPFParagraph p1 = row.getCell(0).getParagraphs().get(0);
 	    				p1.setAlignment(ParagraphAlignment.CENTER);
@@ -440,10 +563,10 @@ public class ExportService extends HttpServlet {
 	    				r1.setText(tblheads[i]);
 	    				r1.setBold(true);
 	    				continue;
-	            	}            		
-					if (i==5) 
-						if (discount == 0) 
-							continue;
+	            	}
+					if (checkboxenbl_arr[i].equals("0")) 
+						continue;
+					
 					XWPFParagraph p1 = row.addNewTableCell().getParagraphs().get(0);
 					p1.setAlignment(ParagraphAlignment.CENTER);
 					XWPFRun r1 = p1.createRun();
@@ -453,114 +576,121 @@ public class ExportService extends HttpServlet {
 	            
 	            for (int i = 0; i < prodlist.length; i++) {
 	            	row = tab.createRow();
-					for (int j = 0; j < 9; j++) {
-						if (j == 1) {
-							row.getCell(j).setText(prodlist[i][j]);;
+			        tblcol = 0;
+					for (int j = 0; j < 10; j++) {
+						if (checkboxenbl_arr[j].equals("0")) 
+							continue;
+						
+						if (j == 2) {
+							row.getCell(tblcol).setText(prodlist[i][j]);
+							++tblcol;
 							continue;
 						} 
-						if (j == 5) {
-							if (discount == 0) {
-								continue;
-							}
-						}	
-						if (j==5 || j==6) {
-							if (j==6) {
-								if (discount==1)
-									colind = j;
-								else 
-									colind = j-1;
-							} else {
-								colind = j;
-							}
-							XWPFParagraph p1 = row.getCell(colind).getParagraphs().get(0);
+						if (j==6 || j==7) {
+							XWPFParagraph p1 = row.getCell(tblcol).getParagraphs().get(0);
 							p1.setAlignment(ParagraphAlignment.CENTER);
 							XWPFRun r1 = p1.createRun();
 							r1.setText(prodlist[i][j]+"%");
+							++tblcol;
 							continue;
-						}
-						if (j==7 || j==8) {
-							if (discount==1)
-								colind = j;
-							else 
-								colind = j-1;
-							XWPFParagraph p1 = row.getCell(colind).getParagraphs().get(0);
-							p1.setAlignment(ParagraphAlignment.CENTER);
-							XWPFRun r1 = p1.createRun();
-							r1.setText(prodlist[i][j]);
-							continue;
-						}
-						XWPFParagraph p1 = row.getCell(j).getParagraphs().get(0);
+						}						
+						XWPFParagraph p1 = row.getCell(tblcol).getParagraphs().get(0);
 						p1.setAlignment(ParagraphAlignment.CENTER);
 						XWPFRun r1 = p1.createRun();
 						r1.setText(prodlist[i][j]);
+						++tblcol;
 					}
 				}
 	            
-	            row = tab.createRow();
-	            for (int j = 0; j < 9; j++) {
-					if (j==5) {
-						if (discount == 1) {
-							row.getCell(j)
-								.getParagraphs().get(0)
-								.createRun()
-								.setText("");
-							continue;
-						} else {
-							continue;
-						}
-					}
-					if (j==6) {
-						if (discount==1)
-							colind = j;
-						else 
-							colind = j-1;
-						XWPFParagraph p1 = row.getCell(colind).getParagraphs().get(0);
+	            row = tab.createRow();	tblcol = 0;
+	            for (int j = 0; j < 10; j++) {
+					if (checkboxenbl_arr[j].equals("0")) 
+						continue;
+
+					if (j==7) {
+						XWPFParagraph p1 = row.getCell(tblcol).getParagraphs().get(0);
 						p1.setAlignment(ParagraphAlignment.CENTER);
 						XWPFRun r1 = p1.createRun();
 						r1.setText("Total Price: ");
+						++tblcol;
 						continue;
 					}
-					if (j==7 || j==8) {
-						if (discount==1)
-							colind = j;
-						else 
-							colind = j-1;	
-						if (j==7) {
-							XWPFParagraph p1 = row.getCell(colind).getParagraphs().get(0);
-							p1.setAlignment(ParagraphAlignment.CENTER);
-							XWPFRun r1 = p1.createRun();
-							r1.setText(otherfields[5]);
-						} else {
-							row.getCell(colind)
-								.getParagraphs().get(0)
-								.createRun()
-								.setText("");
-						}					
+					if (j==8) {
+						XWPFParagraph p1 = row.getCell(tblcol).getParagraphs().get(0);
+						p1.setAlignment(ParagraphAlignment.CENTER);
+						XWPFRun r1 = p1.createRun();
+						r1.setText(otherfields[8][0]);		
+						++tblcol;
 						continue;
 					}
-					row.getCell(j)
+					row.getCell(tblcol)
 						.getParagraphs().get(0)
 						.createRun()
 						.setText("");		
+					++tblcol;
 				}
 	            
 	            paragraph = doc.createParagraph(); 
 	            paragraph.setWordWrapped(true);
 	            run = paragraph.createRun(); 
-	            run.addBreak(); run.addBreak();
+	            run.addBreak(); run.addBreak(); 
+	            run.setBold(true);
 				run.setText("Terms and Conditions : ");
+				
+				paragraph = doc.createParagraph(); 
+	            paragraph.setWordWrapped(true);
+	            run = paragraph.createRun();
+				run.setText("1. Delivery: "+otherfields[3][0]);
 				run.addBreak();
-				run.setText(otherfields[3]);
+				run.setText("2. Payment: "+otherfields[4][0]);
+				run.addBreak(); 
+				
+				run.addTab();
+				run.setText("HDFC BANK");
+				run.addTab(); run.addTab(); run.addTab(); run.addTab();
+				run.setText("Trade House Indore");
+				run.addBreak(); 
+				run.addTab(); 
+				run.setText("A/c No: 00362320001974");
+				run.addTab(); run.addTab();
+				run.setText("IFS/RTGS Code No: HDFC0000036");
+				run.addBreak(); run.addBreak();
+				
+				run.setText("3. All quoted prices are valid for 30 days from date of quotation.");
 				run.addBreak();
+				run.setText("4. Please reference your Kasliwal Brothers quotation number on your purchase orders.");
+				run.addBreak();
+				run.setText("5. Please mention your CST/TIN No./GST No. in your Purchase Order.");
+				run.addBreak();
+				run.setText("6. Please mention Quotation number on your Purchase Order and send it to on "+otherfields[5][0]+" and copy to "+otherfields[6][0]);
+				run.addBreak(); run.addBreak();
+
+				if ( !(otherfields[7][0].equals("")) ) {
+					run.setText("Note: "+otherfields[7][0]);
+					run.addBreak(); run.addBreak(); 
+				}
+				
+				run.addTab();
+				run.setText("Subject to Indore Jurisdiction");
+				run.addTab(); run.addTab();
+				run.setText("FOR KASLIWAL BROTHERS,");
+				run.addBreak(); run.addBreak();
+				run.addTab();
+				run.setText("GST NO. 23AABFK2096H1ZJ");
+				run.addTab(); run.addTab();
+				run.setText("Authorized Signatory");
+				run.addBreak(); 				
 		        			
-				File docfile = new File(desktop+"\\"+filename+".doc");
+				File docfile = new File(desktop+"\\"+filename+".docx");
 				FileOutputStream out = new FileOutputStream(docfile);
 		        doc.write(out); 
 				doc.close();
 				out.flush();
 				out.close();
+				response.getWriter().write("success");
 				
 			} catch (Exception e) {
+				response.getWriter().write("fail");
 				e.printStackTrace();
 			}
 		}

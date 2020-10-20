@@ -8,6 +8,7 @@ import com.google.gson.Gson;
 
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.*;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -41,7 +42,7 @@ public class ImportService extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 			
 		String action = request.getParameter("action");
-		String uploadedFilePath = null;
+		String uploadedFilePath = null, resp = "", fileExt = null; 
 		
 		if (action == null) {
 			FileItemFactory factory = new DiskFileItemFactory();
@@ -62,7 +63,8 @@ public class ImportService extends HttpServlet {
 				    if (fileItem.isFormField() == false) {
 					    if (fileItem.getSize() > 0) {
 							myFileName = fileItem.getName();
-							myFileName = "importfile-" + formatter.format(date) + myFileName.substring(myFileName.lastIndexOf('.'));
+							fileExt = myFileName.substring(myFileName.lastIndexOf('.'));
+							myFileName = "importfile-" + formatter.format(date) + fileExt;
 							uploadedFilePath = filePath +"/temp/"+ myFileName;
 							uploadedFile = new File(uploadedFilePath);
 				            fileItem.write(uploadedFile);
@@ -72,7 +74,8 @@ public class ImportService extends HttpServlet {
 	    	    uploadedFile.deleteOnExit();
 			} catch (Exception e) {
 			    e.printStackTrace();
-	        }		
+				response.getWriter().write("fail");
+	        }	
 		}
 	    
 		if (action!= null && action.equals("contimport"))	{
@@ -80,23 +83,36 @@ public class ImportService extends HttpServlet {
 		}
 				
         List<List<String>> productList = new ArrayList<>();
-        List<String> brandList = new ArrayList<>();		brandList.add("NULL");
-        List<String> hsncodeList = new ArrayList<>();	hsncodeList.add("NULL");
-        List<String> sectionList = new ArrayList<>();	sectionList.add("NULL");
+        List<String> brandList = new ArrayList<>();	
+        List<String> hsncodeList = new ArrayList<>();
+        List<String> sectionList = new ArrayList<>();
         int headrowflg=0, datacellflg=0;
                 
         try {
         	FileInputStream fis = new FileInputStream(new File(uploadedFilePath));
-        	HSSFWorkbook workbook = new HSSFWorkbook(fis);
+        	XSSFWorkbook workbookx = null;	HSSFWorkbook workbook = null;
+        	fileExt = uploadedFilePath.substring(uploadedFilePath.lastIndexOf('.'));
+        	
+        	if (fileExt.equals(".xls")) 
+        		workbook = new HSSFWorkbook(fis);
+        	else
+        		workbookx = new XSSFWorkbook(fis);
         	
         	String[] tblheads = {"Catalogue ID", "Brand", "Packing", "Product Name", "Consumer Rate", "GST Rate", "HSN Code", "Section" };
         	List<Set<Integer>> skipdrows = new ArrayList<Set<Integer>>();
         	
-        	int sheet_count = workbook.getNumberOfSheets();
-			for (int k = 0; k < sheet_count; k++) {
-				HSSFSheet sheet = workbook.getSheetAt(k);
-				Iterator<Row> rows = sheet.rowIterator();
-				
+        	int sheet_count = (fileExt.equals(".xls")) ? workbook.getNumberOfSheets() : workbookx.getNumberOfSheets();
+			
+        	for (int k = 0; k < sheet_count; k++) {
+				Iterator<Row> rows = null;
+				if (fileExt.equals(".xls")) { 
+					HSSFSheet sheet = workbook.getSheetAt(k);
+					rows = sheet.rowIterator();
+				} else {
+	        		XSSFSheet sheet = workbookx.getSheetAt(k);
+	        		rows = sheet.rowIterator();
+				}
+								
 				int cellcount; 
 				datacellflg=0; headrowflg=0;
 				skipdrows.add(new HashSet<Integer>());
@@ -169,7 +185,17 @@ public class ImportService extends HttpServlet {
 										}
 									}
 								} else if (type == CellType.NUMERIC) {
-									data.add(String.valueOf((int) cell.getNumericCellValue()));
+									String num = String.valueOf((long) cell.getNumericCellValue());
+									if (cellcount == 6) {
+										data.add(num);
+										if (!(hsncodeList.contains(num))) 
+											hsncodeList.add(num);
+									} else if (cellcount == 7) {
+										data.add(num);
+										if (!(sectionList.contains(num))) 
+											sectionList.add(num);
+									} else
+										data.add(num);
 								} else {
 									datacellflg = 1;
 								}
@@ -181,10 +207,13 @@ public class ImportService extends HttpServlet {
 				}
 			}
 			
-            workbook.close();
+        	if (fileExt.equals(".xls")) 
+        		workbook.close();
+        	else
+        		workbookx.close();
                         
             if (action == null) {
-	            String resp = "Excel file scanned. <br>";
+	            resp = "Excel file scanned. <br>";
 	            
 	            int errflg = 0;
 	            for (int i=0; i<skipdrows.size(); i++) {
@@ -217,6 +246,7 @@ public class ImportService extends HttpServlet {
             
             	InitialContext initialContext = new InitialContext();
     			String connectionURL = (String) initialContext.lookup("java:comp/env/connectionURL");
+//    			String connectionURL = "jdbc:mysql://localhost:3306/labtech2?serverTimezone=UTC";
     			String classforName = (String) initialContext.lookup("java:comp/env/classforName");
     			String username = (String) initialContext.lookup("java:comp/env/username");
     			String password = (String) initialContext.lookup("java:comp/env/password");
@@ -229,7 +259,7 @@ public class ImportService extends HttpServlet {
 	    		
 	            List<String> db_sql = new ArrayList<String>();		String insert_str ="", QueryString;
 	            
-	            for (int j=1; j<brandList.size(); j++) {
+	            for (int j=0; j<brandList.size(); j++) {
 	            	QueryString = "select brand_id FROM brand_table WHERE brand = '" + brandList.get(j) + "'";
 					rs = statementcheck.executeQuery(QueryString);					
 					if (!(rs.isBeforeFirst())) {
@@ -239,7 +269,7 @@ public class ImportService extends HttpServlet {
 					rs.close();
 	            }
 	
-	            for (int j=1; j<hsncodeList.size(); j++) {
+	            for (int j=0; j<hsncodeList.size(); j++) {
 	            	QueryString = "select hsncode_id FROM hsncode_table WHERE hsncode = '" + hsncodeList.get(j) + "'";
 					rs = statementcheck.executeQuery(QueryString);					
 					if (!(rs.isBeforeFirst())) {
@@ -250,7 +280,7 @@ public class ImportService extends HttpServlet {
 					rs.close();
 	            }
 	
-	            for (int j=1; j<sectionList.size(); j++) {
+	            for (int j=0; j<sectionList.size(); j++) {
 	            	QueryString = "select section_id FROM section_table WHERE section_name = '" + sectionList.get(j) + "'";
 					rs = statementcheck.executeQuery(QueryString);					
 					if (!(rs.isBeforeFirst())) {
@@ -320,8 +350,10 @@ public class ImportService extends HttpServlet {
             }    	    
             
         } catch (IOException e) {
+			response.getWriter().write("fail");
             e.printStackTrace();
         } catch (Exception e) {
+			response.getWriter().write("fail");
             e.printStackTrace();
         }
 

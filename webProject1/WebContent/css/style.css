@@ -50,14 +50,18 @@ a:hover{
 	padding-top: 2.5%;
 }
 
-#resultbtn, #createbtn{
+#resultbtn, #createbtn {
 	width: 300px;
 	margin-left: 25px;
 }
 
 .table {
-	background: #fbfbfb;
+	background-color: #fbfbfb;
 	box-shadow: 0px 0px 20px grey;
+}
+
+table.dataTable tbody tr {
+	background-color: #fbfbfb;	
 }
 
 .table thead th , .td-center {
@@ -161,8 +165,8 @@ hr{
 	width: 35px;
 }
 
-#discount-enbl{
-	margin-left: 7px;
+.checkbox-enbl{
+	margin-left: 3px;
     transform: scale(1.2);	
 }
 
@@ -172,5 +176,5 @@ hr{
 
 .export-icon{
 	width: 40px;
-	margin-left: 30px;
+	margin-left: 20px;
 }
